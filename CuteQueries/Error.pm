@@ -26,8 +26,7 @@ sub new {
 
     my $depth = 0;
     while (1) {
-        $depth++;
-        ($package, $file, $line, $sub) = CORE::caller($depth);
+        ($package, $file, $line, $sub) = CORE::caller($depth++);
 
         # Skip up the call stack until we find something outside
         # of the caller, $class or eval space
