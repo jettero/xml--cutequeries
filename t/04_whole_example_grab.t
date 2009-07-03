@@ -3,6 +3,9 @@ use Test;
 use XML::Twigx::CuteQueries;
 use Data::Dumper;
 
+$Data::Dumper::Sortkeys = 1;
+$Data::Dumper::Indent   = 0;
+
 my $CQ = XML::Twigx::CuteQueries->new;
    $CQ->parsefile("example.xml");
 
@@ -12,12 +15,13 @@ my $h = Dumper([ 'OK', [
         {f1=>29, f2=>31, f3=>37},
 
     ], { row => [qw(503 509)] },
-])
+]);
 
 my $j = Dumper([ $CQ->cute_query(
     result       => '',
     data         => [{'*'=>''}],
-    'other-data' => {raw=>[f1=>'']} },
+    'other-data' => {row=>[f1=>'']},
 )]);
 
-ok( $h, $j );
+plan tests => 1;
+ok( $j, $h );
