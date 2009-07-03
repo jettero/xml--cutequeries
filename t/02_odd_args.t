@@ -5,7 +5,7 @@ use XML::Twigx::CuteQueries;
 plan tests => 4;
 
 my $CQ = XML::Twigx::CuteQueries->new;
- # $CQ->parse("something.xml");
+ # $CQ->parsefile("something.xml");
 
 eval { $CQ->cute_query(1,2,3) };
 

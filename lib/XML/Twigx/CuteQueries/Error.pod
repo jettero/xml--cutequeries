@@ -9,7 +9,7 @@ XML::Twigx::CuteQueries::Error - a simple exception class for CQ
     use XML::Twigx::CuteQueries;
 
     my $twig = XML::Twigx::CuteQueries->new;
-       $twig->parse("something.xml");
+       $twig->parsefile("something.xml");
 
     unless( eval { $twig->cute_query(...) } ) {
         die "something bad happened: $@";
