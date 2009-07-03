@@ -90,8 +90,12 @@ sub throw {
 
 sub stringify {
     my $this = shift;
+    my $type = $this->{type};
 
-    return "... a error dude";
+    return  "DATA ERROR: $this->{text} at $this->{file} line $this->{line}" if $type == DATA_ERROR;
+    return "QUERY ERROR: $this->{text} at $this->{file} line $this->{line}" if $type == QUERY_ERROR;
+
+    return "INTERNAL ERROR in " . __PACKAGE__ . ": unknown error or something";
 }
 
 sub is_success {
