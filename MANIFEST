@@ -4,7 +4,9 @@
 ./Makefile.PL
 ./lib/XML/Twigx/CuteQueries.pod
 .perlcriticrc
+CuteQueries/Error.pm
+lib/XML/Twigx/CuteQueries/Error.pod
+t/01_load.t
 t/critic.t
 t/pod.t
 t/pod_coverage.t
-t/01_load.t

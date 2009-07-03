@@ -1,0 +1,24 @@
+
+=head1 NAME
+
+XML::Twigx::Error - a simple exception class for CQ
+
+=head1 SYNOPSIS
+
+    use strict;
+    use warnings;
+    use XML::Twigx::CuteQueries;
+
+    my $twig = XML::Twigx::CuteQueries->new;
+       $twig->parse("something.xml");
+
+    eval { $twig->cute_query(...) };
+
+    if( $@->ok ) {
+        # query results
+
+    } else {
+        die "something bad happened: $@";
+    }
+
+=cut
