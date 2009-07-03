@@ -7,9 +7,9 @@ use Config;
 use overload '""' => "stringify", fallback=>1;
 use base 'Class::Accessor'; __PACKAGE__->mk_accessors(qw(type text));
 
-use constant IS_SUCCESS     => 1;
-use constant IS_QUERY_ERROR => 2;
-use constant IS_DATA_ERROR  => 3;
+use constant SUCCESS     => 1;
+use constant QUERY_ERROR => 2;
+use constant DATA_ERROR  => 3;
 
 my $USEDBY = "???";
 sub import { $USEDBY = caller; return }
@@ -71,14 +71,14 @@ sub new {
 sub query_error {
     my $this = shift;
 
-    return $this->{type} == IS_DATA_ERROR;
+    return $this->{type} == DATA_ERROR;
     return;
 }
 
 sub data_error {
     my $this = shift;
 
-    return $this->{type} == IS_QUERY_ERROR;
+    return $this->{type} == QUERY_ERROR;
     return;
 }
 
@@ -97,6 +97,6 @@ sub stringify {
 sub is_success {
     my $this = shift;
 
-    return 1 if $this->{type} == IS_SUCCESS;
+    return 1 if $this->{type} == SUCCESS;
     return;
 }
