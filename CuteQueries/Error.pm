@@ -78,14 +78,14 @@ sub new {
 sub query_error {
     my $this = shift;
 
-    return if $this->{type} == QUERY_ERROR;
+    return 1 if $this->{type} == QUERY_ERROR;
     return;
 }
 
 sub data_error {
     my $this = shift;
 
-    return if $this->{type} == DATA_ERROR;
+    return 1 if $this->{type} == DATA_ERROR;
     return;
 }
 
