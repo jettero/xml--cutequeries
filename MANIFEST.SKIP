@@ -4,6 +4,4 @@ Makefile.PL
 ^\.git
 ^\.pm-desc
 blib
-device
-sudo_and_test.sh
-.st
+^\.st
