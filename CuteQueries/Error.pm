@@ -1,4 +1,4 @@
-package XML::Twigx::Error;
+package XML::Twigx::CuteQueries::Error;
 
 use strict;
 use warnings;
@@ -17,7 +17,7 @@ sub import { $USEDBY = caller; return }
 # new {{{
 sub new {
     my $class = shift;
-    my $this = bless {@_}, $class;
+    my $this = bless {text=>"unknown", @_, map {$_=>"unknown"} qw(ub_file ub_line file line package caller)}, $class;
 
     # This is ripped off from IPC::System::Simple::Exception, it's pretty hot
 
@@ -30,6 +30,12 @@ sub new {
 
         # Skip up the call stack until we find something outside
         # of the caller, $class or eval space
+
+        if( $package->isa($USEDBY) ) {
+            $this->{ub_file} = $file;
+            $this->{ub_line} = $line;
+            next;
+        }
 
         next if $package->isa($USEDBY);
         next if $package->isa($class);
@@ -95,7 +101,7 @@ sub stringify {
     return  "DATA ERROR: $this->{text} at $this->{file} line $this->{line}" if $type == DATA_ERROR;
     return "QUERY ERROR: $this->{text} at $this->{file} line $this->{line}" if $type == QUERY_ERROR;
 
-    return "INTERNAL ERROR in " . __PACKAGE__ . ": unknown error or something";
+    return "UNKNOWN ERROR TYPE at $this->{ub_file} line $this->{ub_line}: $this->{text} or something at $this->{file} line $this->{line}";
 }
 
 sub is_success {

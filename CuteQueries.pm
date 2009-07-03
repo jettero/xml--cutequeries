@@ -15,7 +15,7 @@ sub _pre_parse_queries {
     if( @_ % 2 ) {
         XML::Twigx::CuteQueries::Error->new(
             type => XML::Twigx::CuteQueries::Error::QUERY_ERROR(),
-            desc => "odd number of argumentes, queries are hashes and therefore should be a series of key/value pairs.",
+            desc => "odd number of arguments, queries are hashes and therefore should be a series of key/value pairs.",
         )->throw;
     }
 
