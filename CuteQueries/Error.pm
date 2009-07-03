@@ -4,13 +4,13 @@ use strict;
 use warnings;
 use Carp;
 use Config;
-use overload '""' => "stringify", fallback=>1;
+use overload '""' => "_stringify", fallback=>1;
 use base 'Class::Accessor'; __PACKAGE__->mk_accessors(qw(type text));
 
-use constant SUCCESS     => 1;
-use constant QUERY_ERROR => 2;
-use constant DATA_ERROR  => 3;
-use constant UNKNOWN     => 9_000;
+use constant QUERY_ERROR => 1;
+use constant DATA_ERROR  => 2;
+
+use constant UNKNOWN     => 9_999;
 
 my $USEDBY = "???";
 sub import { $USEDBY = caller; return }
@@ -95,7 +95,7 @@ sub throw {
     croak $this;
 }
 
-sub stringify {
+sub _stringify {
     my $this = shift;
     my $type = $this->{type};
 
@@ -103,13 +103,6 @@ sub stringify {
     return "QUERY ERROR: $this->{text} at $this->{file} line $this->{line}" if $type == QUERY_ERROR;
 
     return "UNKNOWN ERROR TYPE at $this->{ub_file} line $this->{ub_line}: $this->{text} or something at $this->{file} line $this->{line}";
-}
-
-sub is_success {
-    my $this = shift;
-
-    return 1 if $this->{type} == SUCCESS;
-    return;
 }
 
 1;

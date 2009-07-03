@@ -10,7 +10,17 @@ We inherit everything from L<XML::Twig>.
 
 =over 4
 
-=item B<blarg>
+=item B<cute_query()>
+
+blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg
+blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg
+blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg
+blarg blarg blarg blarg blarg blarg
+
+blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg
+blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg
+blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg
+blarg blarg blarg blarg blarg blarg
 
 =back
 
@@ -31,4 +41,4 @@ Copyright (c) 2009 Paul Miller
 
 =head1 SEE ALSO
 
-perl(1), L<XML::Twig>
+perl(1), L<XML::Twig>, L<XML::Twigx::CuteQueries::Error>
