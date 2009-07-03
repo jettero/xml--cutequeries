@@ -24,7 +24,8 @@ sub _pre_parse_queries {
 
 sub cute_query {
     my $this = shift;
-    my $opts = shift if ref $_[0] eq "HASH";
+    my $opts = {};
+       $opts = shift if ref $_[0] eq "HASH";
 
     $this->_pre_parse_queries($opts, @_);
 
