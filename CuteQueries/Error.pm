@@ -32,13 +32,15 @@ sub new {
         # Skip up the call stack until we find something outside
         # of the caller, $class or eval space
 
+        croak "This should probably be invoked inside modules designed to use it, rather than just raw as you have done" 
+            unless $package;
+
         if( $package->isa($USEDBY) ) {
             $this->{ub_file} = $file;
             $this->{ub_line} = $line;
             next;
         }
 
-        next if $package->isa($USEDBY);
         next if $package->isa($class);
         next if $package->isa(__PACKAGE__);
         next if $file =~ /^\(eval\s\d+\)$/;
