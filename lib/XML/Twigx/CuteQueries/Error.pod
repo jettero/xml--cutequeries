@@ -98,6 +98,8 @@ Returns true if the error type is a data error.
 
 Croak the error, setting L<$@|perlvar/$@> to the error object.
 
+=back
+
 =head1 AUTHOR
 
 Paul Miller C<< <jettero@cpan.org> >>
