@@ -100,10 +100,10 @@ sub _stringify {
     my $this = shift;
     my $type = $this->{type};
 
-    return  "DATA ERROR: $this->{text} at $this->{file} line $this->{line}" if $type == DATA_ERROR;
-    return "QUERY ERROR: $this->{text} at $this->{file} line $this->{line}" if $type == QUERY_ERROR;
+    return  "DATA ERROR: $this->{text} at $this->{file} line $this->{line}\n" if $type == DATA_ERROR;
+    return "QUERY ERROR: $this->{text} at $this->{file} line $this->{line}\n" if $type == QUERY_ERROR;
 
-    return "UNKNOWN ERROR TYPE at $this->{ub_file} line $this->{ub_line}: $this->{text} or something at $this->{file} line $this->{line}";
+    return "UNKNOWN ERROR TYPE at $this->{ub_file} line $this->{ub_line}: $this->{text} or something at $this->{file} line $this->{line}\n";
 }
 
 1;
