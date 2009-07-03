@@ -64,12 +64,12 @@ sub _execute_query {
         return $result;
 
     } elsif( $rt eq "HASH" ) {
-        die;
-        return { map {1} @c } if $opts->{recurse_text};
-        return { map {1} @c };
+        return { map { $_->gi() => $_->text      } @c } if $opts->{recurse_text};
+        return { map { $_->gi() => $_->text_only } @c };
 
     } elsif( $rt eq "ARRAY" ) {
-        die;
+        return [ map { $_->gi() => $_->text      ] @c } if $opts->{recurse_text};
+        return [ map { $_->gi() => $_->text_only ] @c };
     }
 
     XML::Twigx::CuteQueries::Error->new(text=>"unexpected condition met")->throw;
