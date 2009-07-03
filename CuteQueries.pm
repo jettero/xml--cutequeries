@@ -12,10 +12,12 @@ our $VERSION = '0.5000';
 # _data_error {{{
 sub _data_error {
     my $this = shift;
+    my $desc = shift || "single-value";
+       $desc = shift() . " [$desc result context]";
 
     XML::Twigx::CuteQueries::Error->new(
         type => XML::Twigx::CuteQueries::Error::DATA_ERROR(),
-        text => shift,
+        text => $desc,
     )->throw;
 
     return; # technically unreachable, but critic won't notice
@@ -44,26 +46,30 @@ sub _pre_parse_queries {
 
     return 1;
 }
+
 sub _execute_query {
     my ($this, $root, $opts, $query, $res_type) = @_;
 
-    my $rt = defined $res_type and reftype $res_type;
+    my $rt = (defined $res_type and reftype $res_type);
     my $re = ref($query) eq "Regexp";
-    my @c  = $re ? $root->children($query) : grep { $_ =~ $re } $root->children;
+    my @c  = $re ? grep { $_ =~ $re } $root->children : $root->children($query);
 
-    $this->_data_error("match failed for \"$query\"") unless $opts->{nostrict};
+    $this->_data_error($rt, "match failed for \"$query\"") unless $opts->{nostrict} or @c;
     return unless @c;
 
     if( not $rt ) {
-        $this->_data_error("expected single match for \"$query\", got " . @c) unless $opts->{nostrict} or @c==1;
+        $this->_data_error($rt, "expected single match for \"$query\", got " . @c) unless $opts->{nostrict} or @c==1;
 
-        return scalar $opts->{recurse_text} ? $c[0]->text : $c[0]->text_only;
+        my $result = $opts->{recurse_text} ? $c[0]->text : $c[0]->text_only;
+        return $result;
 
     } elsif( $rt eq "HASH" ) {
+        die;
         return { map {1} @c } if $opts->{recurse_text};
         return { map {1} @c };
 
     } elsif( $rt eq "ARRAY" ) {
+        die;
     }
 
     XML::Twigx::CuteQueries::Error->new(text=>"unexpected condition met")->throw;
@@ -83,6 +89,7 @@ sub cute_query {
         push @result, scalar $this->_execute_query($this->root, $opts, @q);
     }
 
+    return $result[0] unless wantarray; # we never want the size of the array
     return @result;
 }
 
