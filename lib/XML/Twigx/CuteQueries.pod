@@ -10,7 +10,7 @@ We inherit everything from L<XML::Twig>.
 
 =over 4
 
-=item B<
+=item B<blarg>
 
 =back
 
