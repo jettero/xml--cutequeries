@@ -1,0 +1,34 @@
+=head1 NAME
+
+XML::Twigx::CuteQueries - A cute little query language for converting XML to Perl
+
+=head1 SYNOPSIS
+
+=head1 METHODS
+
+We inherit everything from L<XML::Twig>.
+
+=over 4
+
+=item B<
+
+=back
+
+=head1 AUTHOR
+
+Paul Miller C<< <jettero@cpan.org> >>
+
+I am using this software in my own projects...  If you find bugs, please
+please please let me know.  Actually, let me know if you find it handy at
+all.  Half the fun of releasing this stuff is knowing that people use it.
+
+If you see anything wrong with the callbacks, the docs, or anything:  Definitely
+let me know!  rt.cpan, irc, email, whatever.  Just let me know.
+
+=head1 COPYRIGHT
+
+Copyright (c) 2009 Paul Miller
+
+=head1 SEE ALSO
+
+perl(1), L<XML::Twig>
