@@ -1,10 +1,10 @@
-./Changes
-./CuteQueries.pm
-./MANIFEST
-./Makefile.PL
-./lib/XML/Twigx/CuteQueries.pod
 .perlcriticrc
+Changes
+CuteQueries.pm
 CuteQueries/Error.pm
+MANIFEST
+Makefile.PL
+lib/XML/Twigx/CuteQueries.pod
 lib/XML/Twigx/CuteQueries/Error.pod
 t/01_load.t
 t/02_odd_args.t
