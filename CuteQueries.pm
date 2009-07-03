@@ -68,8 +68,8 @@ sub _execute_query {
         return { map { $_->gi() => $_->text_only } @c };
 
     } elsif( $rt eq "ARRAY" ) {
-        return [ map { $_->gi() => $_->text      ] @c } if $opts->{recurse_text};
-        return [ map { $_->gi() => $_->text_only ] @c };
+        return [ map { $_->gi() => $_->text      } @c ] if $opts->{recurse_text};
+        return [ map { $_->gi() => $_->text_only } @c ];
     }
 
     XML::Twigx::CuteQueries::Error->new(text=>"unexpected condition met")->throw;
