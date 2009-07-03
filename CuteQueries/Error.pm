@@ -10,6 +10,7 @@ use base 'Class::Accessor'; __PACKAGE__->mk_accessors(qw(type text));
 use constant SUCCESS     => 1;
 use constant QUERY_ERROR => 2;
 use constant DATA_ERROR  => 3;
+use constant UNKNOWN     => 9_000;
 
 my $USEDBY = "???";
 sub import { $USEDBY = caller; return }
@@ -17,7 +18,7 @@ sub import { $USEDBY = caller; return }
 # new {{{
 sub new {
     my $class = shift;
-    my $this = bless {text=>"unknown", @_, map {$_=>"unknown"} qw(ub_file ub_line file line package caller)}, $class;
+    my $this = bless {type=>UNKNOWN, text=>"unknown", @_, map {$_=>"unknown"} qw(ub_file ub_line file line package caller)}, $class;
 
     # This is ripped off from IPC::System::Simple::Exception, it's pretty hot
 
@@ -77,14 +78,14 @@ sub new {
 sub query_error {
     my $this = shift;
 
-    return $this->{type} == DATA_ERROR;
+    return $this->{type} == QUERY_ERROR;
     return;
 }
 
 sub data_error {
     my $this = shift;
 
-    return $this->{type} == QUERY_ERROR;
+    return $this->{type} == DATA_ERROR;
     return;
 }
 
