@@ -9,7 +9,10 @@ lib/XML/Twigx/CuteQueries.pod
 lib/XML/Twigx/CuteQueries/Error.pod
 t/01_load.t
 t/02_odd_args.t
-t/04_whole_example_grab.t
+t/03_result_grab.t
+t/04_data_grab.t
+t/05_atad_grab.t
+t/06_example_grab.t
 t/critic.t
 t/pod.t
 t/pod_coverage.t

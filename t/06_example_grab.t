@@ -9,19 +9,27 @@ $Data::Dumper::Indent   = 0;
 my $CQ = XML::Twigx::CuteQueries->new;
    $CQ->parsefile("example.xml");
 
-my $h = Dumper([ 'OK', [
+my $exemplar = Dumper({
+    result => 'OK',
+
+    data => [
         {f1=> 7, f2=>11, f3=>13},
         {f1=>17, f2=>19, f3=>23},
         {f1=>29, f2=>31, f3=>37},
+    ],
 
-    ], { row => [qw(503 509)] },
-]);
+    atad => {
+        c1 => [qw(503 509)],
+        c2 => [qw(521 523)],
+    },
 
-my $j = Dumper([ $CQ->cute_query(
-    result       => '',
-    data         => [{'*'=>''}],
-    'other-data' => {row=>[f1=>'']},
-)]);
+});
+
+my $actual = Dumper($CQ->cute_query(undef => {
+    result => '',
+    data   => [row => {'*'=>''}],
+    atad   => {'*' => ['p'=>'']},
+}));
 
 plan tests => 1;
-ok( $j, $h );
+ok( $actual, $exemplar );
