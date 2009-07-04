@@ -17,7 +17,7 @@ our $VERSION = '0.5000';
 sub _data_error {
     my $this = shift;
     my $desc = shift || "single-value";
-       $desc = shift() . " [$desc result context]";
+       $desc = shift() . " [$desc result request]";
 
     XML::Twigx::CuteQueries::Error->new(
         type => XML::Twigx::CuteQueries::Error::DATA_ERROR(),
