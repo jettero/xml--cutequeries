@@ -7,6 +7,10 @@ use Scalar::Util qw(reftype blessed);
 use XML::Twigx::CuteQueries::Error;
 use base 'XML::Twig';
 
+use constant NONE  => 0;
+use constant LIST  => 1;
+use constant KLIST => 2;
+
 our $VERSION = '0.5000';
 
 # _data_error {{{
@@ -48,28 +52,45 @@ sub _pre_parse_queries {
 }
 
 sub _execute_query {
-    my ($this, $root, $opts, $query, $res_type) = @_;
+    my ($this, $root, $opts, $query, $res_type, $context) = @_;
+    $context = NONE unless defined $context and caller eq __PACKAGE__;
 
-    my $rt = (defined $res_type and reftype $res_type);
+    my $rt = (defined $res_type and reftype $res_type) || '';
     my $re = ref($query) eq "Regexp";
     my @c  = $re ? grep { $_ =~ $re } $root->children : $root->children($query);
+
+    warn "\@c=".@c."; rt: $rt; query: $query; context: $context\n";
 
     $this->_data_error($rt, "match failed for \"$query\"") unless $opts->{nostrict} or @c;
     return unless @c;
 
     if( not $rt ) {
-        $this->_data_error($rt, "expected single match for \"$query\", got " . @c) unless $opts->{nostrict} or @c==1;
+        if( $context == LIST ) {
+            return map { $_->text      } @c if $opts->{recurse_text};
+            return map { $_->text_only } @c;
 
-        my $result = $opts->{recurse_text} ? $c[0]->text : $c[0]->text_only;
-        return $result;
+        } elsif( $context == KLIST ) {
+            return map { $_->gi() => $_->text      } @c if $opts->{recurse_text};
+            return map { $_->gi() => $_->text_only } @c;
+
+        } else {
+            $this->_data_error($rt, "expected single match for \"$query\", got " . @c) unless $opts->{nostrict} or @c==1;
+
+            my $result = $opts->{recurse_text} ? $c[0]->text : $c[0]->text_only;
+            return $result;
+        }
 
     } elsif( $rt eq "HASH" ) {
-        return { map { $_->gi() => $_->text      } @c } if $opts->{recurse_text};
-        return { map { $_->gi() => $_->text_only } @c };
+        return {
+            map {
+                my $c = $_;
+                map { $this->_execute_query($c, $opts, $_ => $res_type->{$_}, KLIST) } keys %$res_type;
+            } @c
+       };
 
     } elsif( $rt eq "ARRAY" ) {
-        return [ map { $_->gi() => $_->text      } @c ] if $opts->{recurse_text};
-        return [ map { $_->gi() => $_->text_only } @c ];
+        my ($pat, $res) = @$res_type;
+        return [ map { $this->_execute_query($_, $opts, $pat => $res, LIST) } @c ];
     }
 
     XML::Twigx::CuteQueries::Error->new(text=>"unexpected condition met")->throw;
