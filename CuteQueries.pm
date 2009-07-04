@@ -7,9 +7,9 @@ use Scalar::Util qw(reftype blessed);
 use XML::Twigx::CuteQueries::Error;
 use base 'XML::Twig';
 
-use constant NONE  => 0;
-use constant LIST  => 1;
-use constant KLIST => 2;
+use constant SCALAR => 0;
+use constant LIST   => 1;
+use constant KLIST  => 2;
 
 our $VERSION = '0.5000';
 
@@ -53,13 +53,13 @@ sub _pre_parse_queries {
 
 sub _execute_query {
     my ($this, $root, $opts, $query, $res_type, $context) = @_;
-    $context = NONE unless defined $context and caller eq __PACKAGE__;
+    $context = SCALAR unless defined $context and caller eq __PACKAGE__;
 
     my $rt = (defined $res_type and reftype $res_type) || '';
     my $re = ref($query) eq "Regexp";
     my @c  = $re ? grep { $_ =~ $re } $root->children : $root->children($query);
 
-    warn "\@c=".@c."; rt: $rt; query: $query; context: $context\n";
+    # warn "\@c=".@c."; rt: $rt; query: $query; context: $context\n";
 
     $this->_data_error($rt, "match failed for \"$query\"") unless $opts->{nostrict} or @c;
     return unless @c;
@@ -73,24 +73,45 @@ sub _execute_query {
             return map { $_->gi() => $_->text      } @c if $opts->{recurse_text};
             return map { $_->gi() => $_->text_only } @c;
 
-        } else {
-            $this->_data_error($rt, "expected single match for \"$query\", got " . @c) unless $opts->{nostrict} or @c==1;
-
-            my $result = $opts->{recurse_text} ? $c[0]->text : $c[0]->text_only;
-            return $result;
         }
 
+        $this->_data_error($rt, "expected single match for \"$query\", got " . @c) unless $opts->{nostrict} or @c==1;
+
+        my $result = $opts->{recurse_text} ? $c[0]->text : $c[0]->text_only;
+        return $result;
+
     } elsif( $rt eq "HASH" ) {
-        return {
-            map {
+        if( $context == LIST ) {
+            return map {
                 my $c = $_;
-                map { $this->_execute_query($c, $opts, $_ => $res_type->{$_}, KLIST) } keys %$res_type;
-            } @c
-       };
+                scalar # I don't think I should need this word here, but I clearly do
+                {map {$this->_execute_query($c, $opts, $_ => $res_type->{$_}, KLIST)} keys %$res_type};
+            } @c;
+
+        } elsif( $context == KLIST ) {
+            return map {
+                my $c = $_;
+                $_->gi() => {map { $this->_execute_query($c, $opts, $_ => $res_type->{$_}, KLIST) } keys %$res_type}
+            } @c;
+        }
+
+        $this->_data_error($rt, "expected single match for \"$query\", got " . @c) unless $opts->{nostrict} or @c==1;
+        return {
+            map { $this->_execute_query($c[0], $opts, $_ => $res_type->{$_}, KLIST) } keys %$res_type
+        };
 
     } elsif( $rt eq "ARRAY" ) {
         my ($pat, $res) = @$res_type;
-        return [ map { $this->_execute_query($_, $opts, $pat => $res, LIST) } @c ];
+
+        if( $context == LIST ) {
+            return map { [$this->_execute_query($_, $opts, $pat => $res, LIST)] } @c;
+
+        } elsif( $context == KLIST ) {
+            return map { $_->gi() => [$this->_execute_query($_, $opts, $pat => $res, LIST)] } @c;
+        }
+
+        $this->_data_error($rt, "expected single match for \"$query\", got " . @c) unless $opts->{nostrict} or @c==1;
+        return [ $this->_execute_query($c[0], $opts, $pat => $res, LIST) ];
     }
 
     XML::Twigx::CuteQueries::Error->new(text=>"unexpected condition met")->throw;

@@ -10,9 +10,9 @@ my $CQ = XML::Twigx::CuteQueries->new;
    $CQ->parsefile("example.xml");
 
 my $exemplar = Dumper([
-    {f1=> 7, f2=>11, f3=>13},
-    {f1=>17, f2=>19, f3=>23},
-    {f1=>29, f2=>31, f3=>37},
+    {f1=> '7', f2=>'11', f3=>'13'},
+    {f1=>'17', f2=>'19', f3=>'23'},
+    {f1=>'29', f2=>'31', f3=>'37'},
 ]);
 
 my $matched = Dumper($CQ->cute_query(
