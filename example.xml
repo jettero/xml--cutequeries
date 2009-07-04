@@ -1,5 +1,16 @@
 <?xml version="1.0"?>
 
+<!--
+    $string   = $CQ->cute_query(result => '');
+    $arrayref = $CQ->cute_query(data   => [row => {'*'=>''}]);
+    $hashref  = $CQ->cute_query(atad   => {'*' => ['p'=>'']});
+    $hashref  = $CQ->cute_query(undef  => {
+        result => '',
+        data   => [row => {'*'=>''}],
+        atad   => {'*' => ['p'=>'']},
+    });
+-->
+
 <root>
     <result>OK</result>
     <data>
@@ -7,7 +18,8 @@
         <row><f1>17</f1><f2>19</f2><f3>23</f3></row>
         <row><f1>29</f1><f2>31</f2><f3>37</f3></row>
     </data>
-    <other-data>
-        <row><f1>503</f1><f1>509</f1></row>
-    </other-data>
+    <atad>
+        <c1><p>503</p><p>509</p></c1>
+        <c2><p>521</p><p>523</p></c2>
+    </atad>
 </root>
