@@ -30,10 +30,14 @@ sub _data_error {
 # _query_error {{{
 sub _query_error {
     my $this = shift;
+    my $err  = shift;
+
+    my $f = __FILE__;
+    $err =~ s/\s+at\s+\Q$f\E\s+line\s+\d+//;
 
     XML::Twigx::CuteQueries::Error->new(
         type => XML::Twigx::CuteQueries::Error::QUERY_ERROR(),
-        text => shift,
+        text => $err,
     )->throw;
 
     return; # technically unreachable, but critic won't notice
