@@ -61,7 +61,20 @@ sub _execute_query {
 
     my $rt = (defined $res_type and reftype $res_type) || '';
     my $re = ref($query) eq "Regexp";
-    my @c  = $re ? grep { $_ =~ $re } $root->children : $root->children($query);
+
+    if( $context == KLIST ) {
+        if( $query =~ m/^\(\?[\w-]+:.+\)\z/ ) {
+            # NOTE: the key of a has can never actually be a blessed Regexp, so re-bless if we find one
+
+            $query = qr($query);
+            $re = 1;
+
+            # NOTE: should we always do this instead of only during KLIST?
+        }
+    }
+
+    my @c  = eval { $re ? grep {$_->gi() =~ $query } $root->children : $root->children($query) };
+    $this->_query_error("while executing \"$query\": $@") if $@;
 
     # warn "\@c=".@c."; rt: $rt; query: $query; context: $context\n";
 
