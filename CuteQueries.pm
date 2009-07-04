@@ -118,7 +118,7 @@ sub _execute_query {
         };
 
     } elsif( $rt eq "ARRAY" ) {
-        my ($pat, $res) = @$res_type;
+        return [] unless my ($pat, $res) = @$res_type;
 
         if( $context == LIST ) {
             return map { [$this->_execute_query($_, $opts, $pat => $res, LIST)] } @c;
