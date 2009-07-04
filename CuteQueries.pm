@@ -73,7 +73,7 @@ sub _execute_query {
         }
     }
 
-    my @c  = eval { $re ? grep {$_->gi() =~ $query } $root->children : $root->children($query) };
+    my @c  = eval { $re ? grep {$_->gi() =~ $query } $root->children : $root->get_xpath($query) };
     $this->_query_error("while executing \"$query\": $@") if $@;
 
     # warn "\@c=".@c."; rt: $rt; query: $query; context: $context\n";
