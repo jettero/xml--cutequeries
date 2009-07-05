@@ -19,8 +19,8 @@ my $exemplar2 = Dumper({
     b => 'I may need special handlers for @queries',
 });
 
-my $actual1 = $CQ->cute_query(data=>['@a'=>'', '@b'=>'']);
-my $actual2 = $CQ->cute_query(data=>{'@*'=>''});
+my $actual1 = Dumper( $CQ->cute_query(data=>['@a'=>'', '@b'=>'']) );
+my $actual2 = Dumper( $CQ->cute_query(data=>{'@*'=>''}) );
 
 plan tests => 4;
 

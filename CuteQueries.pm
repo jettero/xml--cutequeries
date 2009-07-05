@@ -77,17 +77,41 @@ sub _execute_query {
         }
     }
 
-    my @c = eval { $re ? grep {$_->gi =~ $query } $root->children : $root->get_xpath($query) };
+    my @c;
+    my $attr_query;
+    if( not $rt ) {
+        if( $query =~ m/^\S/ and $query =~ s/\/?\@([\w\d]+|\*)\z// ) {
+            $attr_query = $1;
+            @c = $root unless $query;
+        }
+    }
 
-    $this->_query_error("while executing \"$query\": $@") if $@;
-    @c = grep {$_->gi !~ m/^#/} @c unless $opts->{nofilter_nontags};
+    unless(@c) {
+        @c = eval { $re ? grep {$_->gi =~ $query } $root->children : $root->get_xpath($query) };
 
-    # warn "\@c=".@c."; rt: $rt; query: $query; context: $context\n";
+        $this->_query_error("while executing \"$query\": $@") if $@;
+        @c = grep {$_->gi !~ m/^#/} @c unless $opts->{nofilter_nontags};
+    }
 
     $this->_data_error($rt, "match failed for \"$query\"") unless @c or $opts->{nostrict};
     return unless @c;
 
     if( not $rt ) {
+        if( $attr_query ) {
+            if( $attr_query eq "*" ) {
+                if( $context == LIST ) {
+                    return map { values %{$_->{att}} } @c;
+
+                } elsif( $context == KLIST ) {
+                    return map { %{$_->{att}} } @c;
+                }
+
+                my @v = values %{$_->{att}};
+                $this->_data_error($rt, "expected single match for \"$query\", got " . @v) unless $opts->{nostrict} or @v==1;
+                return $v[0];
+            }
+        }
+
         if( $context == LIST ) {
             return map { $_->text      } @c if $opts->{recurse_text};
             return map { $_->text_only } @c;
