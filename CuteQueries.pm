@@ -77,10 +77,10 @@ sub _execute_query {
         }
     }
 
-    my @c  = eval { $re ? grep {$_->gi() =~ $query } $root->children : $root->get_xpath($query) };
+    my @c  = eval { $re ? grep {$_->gi =~ $query } $root->children : $root->get_xpath($query) };
     $this->_query_error("while executing \"$query\": $@") if $@;
 
-    @c = grep {$_->gi() !~ m/^#/} @c unless $opts->{nofilter_nontags};
+    @c = grep {$_->gi !~ m/^#/} @c unless $opts->{nofilter_nontags};
 
     # warn "\@c=".@c."; rt: $rt; query: $query; context: $context\n";
 
@@ -93,8 +93,8 @@ sub _execute_query {
             return map { $_->text_only } @c;
 
         } elsif( $context == KLIST ) {
-            return map { $_->gi() => $_->text      } @c if $opts->{recurse_text};
-            return map { $_->gi() => $_->text_only } @c;
+            return map { $_->gi => $_->text      } @c if $opts->{recurse_text};
+            return map { $_->gi => $_->text_only } @c;
 
         }
 
@@ -114,7 +114,7 @@ sub _execute_query {
         } elsif( $context == KLIST ) {
             return map {
                 my $c = $_;
-                $_->gi() => {map { $this->_execute_query($c, $opts, $_ => $res_type->{$_}, KLIST) } keys %$res_type}
+                $_->gi => {map { $this->_execute_query($c, $opts, $_ => $res_type->{$_}, KLIST) } keys %$res_type}
             } @c;
         }
 
@@ -130,7 +130,7 @@ sub _execute_query {
             return map { [$this->_execute_query($_, $opts, $pat => $res, LIST)] } @c;
 
         } elsif( $context == KLIST ) {
-            return map { $_->gi() => [$this->_execute_query($_, $opts, $pat => $res, LIST)] } @c;
+            return map { $_->gi => [$this->_execute_query($_, $opts, $pat => $res, LIST)] } @c;
         }
 
         $this->_data_error($rt, "expected single match for \"$query\", got " . @c) unless $opts->{nostrict} or @c==1;
