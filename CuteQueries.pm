@@ -96,98 +96,50 @@ sub _execute_query {
     $this->_data_error($rt, "match failed for \"$query\"") unless @c or $opts->{nostrict};
     return unless @c;
 
-    if( not $rt ) {
-        # XXX: This is in some serious need of DRY ...
-        # (it's like this to avoid perl's heavy subcall() expense, but it sucks pretty bad like this)
+    my $_trimlist = $opts->{notrim} ? sub {@_} : sub { for(@_) { unless( m/\n/ ) { s/^\s+//; s/\s+$// }}; @_ };
+    my $_trimhash = $opts->{notrim} ? sub {@_} : sub { my %h=@_; for(values %h) { unless( m/\n/ ) { s/^\s+//; s/\s+$// }}; %h };
 
+    if( not $rt ) {
         if( $attr_query ) {
             if( $attr_query eq "*" ) {
                 if( $context == LIST ) {
-                    my @r = map { values %{$_->{att}} } @c;
-                    unless($opts->{notrim}) {
-                        for(@r) {
-                            unless( m/\n/ ) {
-                                s/^\s+//;
-                                s/\s+$//;
-                            }
-                        }
-                    }
-                    return @r;
+                    return $_trimlist->( map { values %{$_->{att}} } @c );
 
                 } elsif( $context == KLIST ) {
-                    my %r = map { %{$_->{att}} } @c;
-                    unless($opts->{notrim}) {
-                        for(values %r) {
-                            unless( m/\n/ ) {
-                                s/^\s+//;
-                                s/\s+$//;
-                            }
-                        }
-                    }
-                    return %r;
+                    return $_trimhash->( map { %{$_->{att}} } @c );
                 }
 
                 my @v = map { values %{$_->{att}} } @c;
                 $this->_data_error($rt, "expected single match for \"$query\", got " . @v) unless $opts->{nostrict} or @v==1;
-                unless($opts->{notrim}) {
-                    unless( $v[0] =~ m/\n/ ) {
-                        $v[0] =~ s/^\s+//;
-                        $v[0] =~ s/\s+$//;
-                    }
-                }
-                return $v[0];
+                return $_trimlist->($v[0]);
             }
 
             if( $context == LIST ) {
-                my @r = map { $_->{att}{$attr_query} } @c;
-                    unless($opts->{notrim}) {
-                        for(@r) {
-                            unless( m/\n/ ) {
-                                s/^\s+//;
-                                s/\s+$//;
-                            }
-                        }
-                    }
-                return @r;
+                return $_trimlist->( map { $_->{att}{$attr_query} } @c );
 
             } elsif( $context == KLIST ) {
-                my %r = map { $attr_query => $_->{att}{$attr_query} } @c;
-                unless($opts->{notrim}) {
-                    for(values %r) {
-                        unless( m/\n/ ) {
-                            s/^\s+//;
-                            s/\s+$//;
-                        }
-                    }
-                }
-                return %r;
+                return $_trimhash->( map { $attr_query => $_->{att}{$attr_query} } @c );
             }
 
             my @v = map { $_->{att}{$attr_query} } @c;
             $this->_data_error($rt, "expected single match for \"$query\", got " . @v) unless $opts->{nostrict} or @v==1;
-            unless($opts->{notrim}) {
-                unless( $v[0] =~ m/\n/ ) {
-                    $v[0] =~ s/^\s+//;
-                    $v[0] =~ s/\s+$//;
-                }
-            }
-            return $v[0];
+            return $_trimlist->($v[0]);
         }
 
         if( $context == LIST ) {
-            return map { $_->text      } @c if $opts->{recurse_text};
-            return map { $_->text_only } @c;
+            return $_trimlist->( map { $_->text      } @c ) if $opts->{recurse_text};
+            return $_trimlist->( map { $_->text_only } @c );
 
         } elsif( $context == KLIST ) {
-            return map { $_->gi => $_->text      } @c if $opts->{recurse_text};
-            return map { $_->gi => $_->text_only } @c;
+            return $_trimhash->( map { $_->gi => $_->text      } @c ) if $opts->{recurse_text};
+            return $_trimhash->( map { $_->gi => $_->text_only } @c );
 
         }
 
         $this->_data_error($rt, "expected single match for \"$query\", got " . @c) unless $opts->{nostrict} or @c==1;
 
         my $result = $opts->{recurse_text} ? $c[0]->text : $c[0]->text_only;
-        return $result;
+        return $_trimlist->($result);
 
     } elsif( $rt eq "HASH" ) {
         if( $context == LIST ) {
