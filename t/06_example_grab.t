@@ -25,7 +25,7 @@ my $exemplar = Dumper({
 
 });
 
-my $actual = Dumper($CQ->cute_query(undef => {
+my $actual = Dumper($CQ->cute_query('/' => {
     result => '',
     data   => [row => {'*'=>''}],
     atad   => {'*' => [ f1=>'']},
