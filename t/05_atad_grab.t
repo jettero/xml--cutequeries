@@ -15,7 +15,7 @@ my $exemplar = Dumper({
 });
 
 my $actual = Dumper($CQ->cute_query(
-    atad => {'*' => ['p'=>'']},
+    atad => {'*' => [f1=>'']},
 ));
 
 plan tests => 1;
