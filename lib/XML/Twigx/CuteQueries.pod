@@ -105,26 +105,6 @@ Note that CQ doesn't currently support slurping XML (or HTML) from the source
 document.  There are no plans for this either.  If you need it, enter a wishlist
 item on RT.
 
-=item B<nofilter_nontags>
-
-    my $CQ = XML::Twigx::CuteQueries
-     ->new->parse("<r> <x>7</x> <x>8</x></r>");
-
-By default, we skip the C<#PCDATA> "node" before the C<< <x> >>.
-
-    my $r1 = $CQ->cute_query('.'=>[x=>'']);
-    # $r1 is [7]
-
-    my $r2 = $CQ->cute_query({nofilter_nontags=>1}, '.'=>[x=>'']);
-    # $r2 is ['', 7, '', 8]
-
-Preserving the text in a C<#PCDATA> node does seem to require L</recurse_text>.
-
-    my $r3 = $CQ->cute_query(
-        {nofilter_nontags=1, recurse_text=>1},
-        '.'=>[x=>'']);
-    # $r3 is [' ', 7, ' ', 8]
-
 =item B<notrim>
 
 By default, CQ will trim the leading and trailing space on each string result
@@ -138,6 +118,27 @@ without this option.  It will skip the trim on results that contain newlines.
 
     my $r2 = $CQ->cute_query({notrim=>1}, '.'=>[x=>'']);
     # $r2 is [" 7", " \n8"]
+
+=item B<nofilter_nontags>
+
+    my $CQ = XML::Twigx::CuteQueries
+     ->new->parse("<r> <x>7</x> <x>8</x></r>");
+
+By default, we skip the C<#PCDATA> "node" before the C<< <x> >>.
+
+    my $r1 = $CQ->cute_query('.'=>[x=>'']);
+    # $r1 is [7]
+
+    my $r2 = $CQ->cute_query({nofilter_nontags=>1}, '.'=>[x=>'']);
+    # $r2 is ['', 7, '', 8]
+
+Preserving the text in a C<#PCDATA> requires L</notrim> (obviously), but also
+seems to require L</recurse_text>.
+
+    my $r3 = $CQ->cute_query(
+        {notrim=>1, nofilter_nontags=1, recurse_text=>1},
+        '.'=>[x=>'']);
+    # $r3 is [' ', 7, ' ', 8]
 
 =back
 
