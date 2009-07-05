@@ -13,6 +13,8 @@ use constant KLIST  => 2;
 
 our $VERSION = '0.5000';
 
+our %VALID_OPTS = (map {$_=>1} qw(nostrict recurse_text nofilter_nontags));
+
 # _data_error {{{
 sub _data_error {
     my $this = shift;
@@ -139,6 +141,10 @@ sub cute_query {
     my $this = shift;
     my $opts = {};
        $opts = shift if ref $_[0] eq "HASH";
+
+    for(keys %$opts) {
+        $this->_query_error("no such query option \"$_\"") unless $VALID_OPTS{$_};
+    }
 
     $this->_pre_parse_queries($opts, @_);
 
