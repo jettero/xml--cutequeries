@@ -1,8 +1,7 @@
 use Test;
 use XML::Twigx::CuteQueries;
 
-my $CQ = XML::Twigx::CuteQueries->new;
-   $CQ->parse("<r><x><y>7</y></x></r>");
+my $CQ = XML::Twigx::CuteQueries->new->parse("<r><x><y>7</y></x></r>");
 
 plan tests => 4;
 
