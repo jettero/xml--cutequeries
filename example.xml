@@ -3,6 +3,8 @@
 <!--
     $string   = $CQ->cute_query(result => '');
     $arrayref = $CQ->cute_query(data   => [row => {'*'=>''}]);
+    $arrayref = $CQ->cute_query(data   => ['@a'=> '', '@b'=>'']);
+    $hashref  = $CQ->cute_query(data   => {'@*'=>''});
     $hashref  = $CQ->cute_query(atad   => {'*' => [ f1=>'']});
     $hashref  = $CQ->cute_query('.'    => {
         result => '',
