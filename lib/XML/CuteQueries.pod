@@ -28,7 +28,7 @@ There is only one user method in this module and it just uses L<XML::Twig> to
 return the data you asked for in a predicable perl structure (see L</ARRRRG> for
 details on the author's perceived unpredictability of L<XML::Simple>).
 
-=head1 B<cute_query()>
+=head1 CUTE QUERIES
 
 This module uses the Perl parser to implement a miniature query language called
 I<cute queries>.  They queries are not proper Perl code in the traditional
@@ -77,6 +77,32 @@ following XML source is assumed.
             <c2><f1>521</f1><f1>523</f1></c2>
         </atad>
     </root>
+
+=head1 METHODS
+
+=over 4
+
+=item B<cute_query()>
+
+The only method exposed by L<XML::CuteQueries> that doesn't come from
+L<XML::Twig>.  It is the only real interface into the query language.
+This function can take any number of arguments.
+
+If the first argument is a hash ref, it's assumed to be an
+L<options hashref|/OPTIONS>.  Otherwise, all arguments are assumed to be
+L<query pairs|/CUTE QUERIES>.
+
+=item B<parse()>
+
+Choose this method to ask L<XML::Twig> to parse some XML.  See
+L<XML::Twig/parse> for the full story.
+
+=item B<parsefile()>
+
+Choose this method to ask L<XML::Twig> to parse an external XML file.  See
+L<XML::Twig/parsefile> for the full story.
+
+=back
 
 =head1 OPTIONS
 
@@ -182,7 +208,7 @@ had with L<XML::Simple>.  I'm sure there's a way to solve this with
 L<XML::Simple>, but I wouldn't want to have to figure it out.  The module is
 just too complicated.
 
-=head2 WHY CQ
+=head1 WHY CQ
 
 L<XML::Twig> is pretty easy to use.  I'm also rather fond of L<XML::XPath>.  But
 I found myself writing a great deal of Perl to get data from XML that I felt
