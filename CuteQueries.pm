@@ -46,6 +46,7 @@ sub _query_error {
 }
 # }}}
 
+# _pre_parse_queries {{{
 sub _pre_parse_queries {
     my $this = shift;
     my $opts = shift;
@@ -56,7 +57,8 @@ sub _pre_parse_queries {
 
     return 1;
 }
-
+# }}}
+# _execute_query {{{
 sub _execute_query {
     my ($this, $root, $opts, $query, $res_type, $context) = @_;
     $context = SCALAR unless defined $context and caller eq __PACKAGE__;
@@ -82,7 +84,7 @@ sub _execute_query {
 
     # warn "\@c=".@c."; rt: $rt; query: $query; context: $context\n";
 
-    $this->_data_error($rt, "match failed for \"$query\"") unless $opts->{nostrict} or @c;
+    $this->_data_error($rt, "match failed for \"$query\"") unless @c or $opts->{nostrict};
     return unless @c;
 
     if( not $rt ) {
@@ -138,6 +140,7 @@ sub _execute_query {
     XML::Twigx::CuteQueries::Error->new(text=>"unexpected condition met")->throw;
     return;
 }
+# }}}
 
 sub cute_query {
     my $this = shift;
