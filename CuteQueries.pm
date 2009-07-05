@@ -63,6 +63,8 @@ sub _execute_query {
     my ($this, $root, $opts, $query, $res_type, $context) = @_;
     $context = SCALAR unless defined $context and caller eq __PACKAGE__;
 
+    my $root_match = ($query eq "/" ? 1:0);
+
     my $rt = (defined $res_type and reftype $res_type) || '';
     my $re = ref($query) eq "Regexp";
 
@@ -77,15 +79,20 @@ sub _execute_query {
         }
     }
 
-    my @c  = eval { $re ? grep {$_->gi =~ $query } $root->children : $root->get_xpath($query) };
-    $this->_query_error("while executing \"$query\": $@") if $@;
+    my @c;
+    if( $root_match ) {
+        @c = $this->root;
 
-    @c = grep {$_->gi !~ m/^#/} @c unless $opts->{nofilter_nontags};
+    } else {
+        @c = eval { $re ? grep {$_->gi =~ $query } $root->children : $root->get_xpath($query) };
+        $this->_query_error("while executing \"$query\": $@") if $@;
+        @c = grep {$_->gi !~ m/^#/} @c unless $opts->{nofilter_nontags};
 
-    # warn "\@c=".@c."; rt: $rt; query: $query; context: $context\n";
+        # warn "\@c=".@c."; rt: $rt; query: $query; context: $context\n";
 
-    $this->_data_error($rt, "match failed for \"$query\"") unless @c or $opts->{nostrict};
-    return unless @c;
+        $this->_data_error($rt, "match failed for \"$query\"") unless @c or $opts->{nostrict};
+        return unless @c;
+    }
 
     if( not $rt ) {
         if( $context == LIST ) {
