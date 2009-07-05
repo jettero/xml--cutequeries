@@ -96,8 +96,16 @@ sub _execute_query {
     $this->_data_error($rt, "match failed for \"$query\"") unless @c or $opts->{nostrict};
     return unless @c;
 
-    my $_trimlist = $opts->{notrim} ? sub {@_} : sub { for(@_) { unless( m/\n/ ) { s/^\s+//; s/\s+$// }}; @_ };
-    my $_trimhash = $opts->{notrim} ? sub {@_} : sub { my %h=@_; for(values %h) { unless( m/\n/ ) { s/^\s+//; s/\s+$// }}; %h };
+    my $_trimlist;
+    my $_trimhash;
+
+    if( $opts->{notrim} ) {
+        $_trimlist = $_trimhash = sub {@_};
+
+    } else {
+        $_trimlist = sub { for(@_) { unless( m/\n/ ) { s/^\s+//; s/\s+$// }}; @_ };
+        $_trimhash = sub { my %h=@_; for(values %h) { unless( m/\n/ ) { s/^\s+//; s/\s+$// }}; %h };
+    }
 
     if( not $rt ) {
         if( $attr_query ) {
@@ -111,7 +119,7 @@ sub _execute_query {
 
                 my @v = map { values %{$_->{att}} } @c;
                 $this->_data_error($rt, "expected single match for \"$query\", got " . @v) unless $opts->{nostrict} or @v==1;
-                return $_trimlist->($v[0]);
+                return ($_trimlist->($v[0]))[0];
             }
 
             if( $context == LIST ) {
@@ -123,7 +131,7 @@ sub _execute_query {
 
             my @v = map { $_->{att}{$attr_query} } @c;
             $this->_data_error($rt, "expected single match for \"$query\", got " . @v) unless $opts->{nostrict} or @v==1;
-            return $_trimlist->($v[0]);
+            return ($_trimlist->($v[0]))[0];
         }
 
         if( $context == LIST ) {
@@ -139,7 +147,7 @@ sub _execute_query {
         $this->_data_error($rt, "expected single match for \"$query\", got " . @c) unless $opts->{nostrict} or @c==1;
 
         my $result = $opts->{recurse_text} ? $c[0]->text : $c[0]->text_only;
-        return $_trimlist->($result);
+        return ($_trimlist->($result))[0];
 
     } elsif( $rt eq "HASH" ) {
         if( $context == LIST ) {
