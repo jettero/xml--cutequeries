@@ -4,7 +4,7 @@
     $string   = $CQ->cute_query(result => '');
     $arrayref = $CQ->cute_query(data   => [row => {'*'=>''}]);
     $hashref  = $CQ->cute_query(atad   => {'*' => [ f1=>'']});
-    $hashref  = $CQ->cute_query('/'    => {
+    $hashref  = $CQ->cute_query('.'    => {
         result => '',
         data   => [row => {'*'=>''}],
         atad   => {'*' => [ f1=>'']},
