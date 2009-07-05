@@ -38,24 +38,32 @@ Cute queries are made up of pairs:
 
     $what_you_are_requesting => $how_you_would_like_it
 
+=head2 B<C<$what_you_are_requesting>>
+
 The C<$what_you_are_requesting> is specified with either
 L<XPath|http://www.w3.org/TR/xpath> (as supported by L<XML::Twig>) or with
 regular expressions.  Regular expression selectors are matched against each
 direct descendant one at a time, while the xpath selectors use Twig's internal
 matching mechanisms to flit around the document willy nilly.
 
-Matching starts while sitting on the root element, rather than the Twig.  This
-slightly differs from twig.  Pretend your XML is C<< <r><x><y>7</y></x></r> >>,
-C<$CQ->cute_query('x/y'=>'')> will return C<7>, while Twig would return an empty
-list (since the document starts at C</> instead of C<< <r> >>.
+Matching starts at the root element, rather than the document.  This slightly
+differs from twig.  Pretend your XML is C<< <r><x><y>7</y></x></r> >>,
+C<$CQ->cute_query('x/y'=>'')> will return C<7>, while Twig (i.e.,
+C<$twig->get_xpath("x/y")> would return an empty list (since the document starts
+at C</> instead of C<< <r> >>.
 
 CQ will also return C<< <r> >> when matching C<"."> after a parse.
 
-CQ keeps track of your preference for keys internally.  That is, if you 
+=head2 B<C<$how_you_would_like_it>>
+
+CQ keeps track of your preference for keys internally.  That is, if you want to
+fill a hashref, it will return keys (the tag names) for the matched tags along
+with the values.
 
 =head1 EXAMPLES
 
-For these examples, the following XML source is assumed.
+This is all a lot easier to explain by example.  For these examples, the
+following XML source is assumed.
 
     <root>
         <result>OK</result>
