@@ -22,7 +22,10 @@ my $exemplar2 = Dumper({
 my $actual1 = $CQ->cute_query(data=>['@a'=>'', '@b'=>'']);
 my $actual2 = $CQ->cute_query(data=>{'@*'=>''});
 
-plan tests => 2;
+plan tests => 4;
 
 ok( $actual1, $exemplar1 );
 ok( $actual2, $exemplar2 );
+
+ok( $CQ->cute_query('/root/data/@a' => ''), qr(hard to fetch) );
+ok( $CQ->cute_query('data/@a'       => ''), qr(hard to fetch) );
