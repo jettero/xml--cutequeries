@@ -13,7 +13,7 @@ use constant KLIST  => 2;
 
 our $VERSION = '0.5000';
 
-our %VALID_OPTS = (map {$_=>1} qw(nostrict recurse_text nofilter_nontags));
+our %VALID_OPTS = (map {$_=>1} qw(nostrict recurse_text nofilter_nontags notrim));
 
 # _data_error {{{
 sub _data_error {
@@ -97,29 +97,80 @@ sub _execute_query {
     return unless @c;
 
     if( not $rt ) {
+        # XXX: This is in some serious need of DRY ...
+        # (it's like this to avoid perl's heavy subcall() expense, but it sucks pretty bad like this)
+
         if( $attr_query ) {
             if( $attr_query eq "*" ) {
                 if( $context == LIST ) {
-                    return map { values %{$_->{att}} } @c;
+                    my @r = map { values %{$_->{att}} } @c;
+                    unless($opts->{notrim}) {
+                        for(@r) {
+                            unless( m/\n/ ) {
+                                s/^\s+//;
+                                s/\s+$//;
+                            }
+                        }
+                    }
+                    return @r;
 
                 } elsif( $context == KLIST ) {
-                    return map { %{$_->{att}} } @c;
+                    my %r = map { %{$_->{att}} } @c;
+                    unless($opts->{notrim}) {
+                        for(values %r) {
+                            unless( m/\n/ ) {
+                                s/^\s+//;
+                                s/\s+$//;
+                            }
+                        }
+                    }
+                    return %r;
                 }
 
                 my @v = map { values %{$_->{att}} } @c;
                 $this->_data_error($rt, "expected single match for \"$query\", got " . @v) unless $opts->{nostrict} or @v==1;
+                unless($opts->{notrim}) {
+                    unless( $v[0] =~ m/\n/ ) {
+                        $v[0] =~ s/^\s+//;
+                        $v[0] =~ s/\s+$//;
+                    }
+                }
                 return $v[0];
             }
 
             if( $context == LIST ) {
-                return map { $_->{att}{$attr_query} } @c;
+                my @r = map { $_->{att}{$attr_query} } @c;
+                    unless($opts->{notrim}) {
+                        for(@r) {
+                            unless( m/\n/ ) {
+                                s/^\s+//;
+                                s/\s+$//;
+                            }
+                        }
+                    }
+                return @r;
 
             } elsif( $context == KLIST ) {
-                return map { $attr_query => $_->{att}{$attr_query} } @c;
+                my %r = map { $attr_query => $_->{att}{$attr_query} } @c;
+                unless($opts->{notrim}) {
+                    for(values %r) {
+                        unless( m/\n/ ) {
+                            s/^\s+//;
+                            s/\s+$//;
+                        }
+                    }
+                }
+                return %r;
             }
 
             my @v = map { $_->{att}{$attr_query} } @c;
             $this->_data_error($rt, "expected single match for \"$query\", got " . @v) unless $opts->{nostrict} or @v==1;
+            unless($opts->{notrim}) {
+                unless( $v[0] =~ m/\n/ ) {
+                    $v[0] =~ s/^\s+//;
+                    $v[0] =~ s/\s+$//;
+                }
+            }
             return $v[0];
         }
 
