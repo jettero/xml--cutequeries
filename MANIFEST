@@ -15,6 +15,7 @@ t/05_atad_grab.t
 t/06_example_grab.t
 t/07_data_ab_grab.t
 t/08_test_simple_nostrict.t
+t/09_whitespace.t
 t/critic.t
 t/pod.t
 t/pod_coverage.t
