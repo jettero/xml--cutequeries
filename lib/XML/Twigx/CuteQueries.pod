@@ -4,25 +4,183 @@ XML::Twigx::CuteQueries - A cute little query language for converting XML to Per
 
 =head1 SYNOPSIS
 
-=head1 METHODS
+This is a cross between L<XML::Simple> (which isn't simple at all) and
+L<XML::Twig> which is a pretty fun way to process XML documents.
 
-We inherit everything from L<XML::Twig>.
+    use strict;
+    use warnings;
+    use XML::Twigx::CuteQueries;
+
+    my $CQ = XML::Twigx::CuteQueries->new;
+       $CQ->parsefile("example.xml");
+
+    my $result = $CQ->cute_query(result=>'');
+    my $data   = $CQ->cute_query(data=>[row=>{'*'=>''}]);
+
+L<XML::Twigx::CuteQueries> L<is a|perlvar/@ISA> L<XML::Twig>, so when this
+miniature query language isn't enough for your needs, you can just fall back on
+the Twig methods.
+
+This module isn't likely to do a lot more than the above so it can
+I<remain simple>, something L<XML::Simple> forgot to do.
+
+There is only one user method in this module and it just uses L<XML::Twig> to
+return the data you asked for in a predicable perl structure (see L</ARRRRG> for
+details on the author's perceived unpredictability of L<XML::Simple>).
+
+=head1 B<cute_query()>
+
+This module uses the Perl parser to implement a miniature query language called
+I<cute queries>.  They queries are not proper Perl code in the traditional
+sense.
+
+Cute queries are made up of pairs:
+
+    $what_you_are_requesting => $how_you_would_like_it
+
+The C<$what_you_are_requesting> is specified with either
+L<XPath|http://www.w3.org/TR/xpath> (as supported by L<XML::Twig>) or with
+regular expressions.  Regular expression selectors are matched against each
+direct descendant one at a time, while the xpath selectors use Twig's internal
+matching mechanisms to flit around the document willy nilly.
+
+Matching starts while sitting on the root element, rather than the Twig.  This
+slightly differs from twig.  Pretend your XML is C<< <r><x><y>7</y></x></r> >>,
+C<$CQ->cute_query('x/y'=>'')> will return C<7>, while Twig would return an empty
+list (since the document starts at C</> instead of C<< <r> >>.
+
+CQ will also return C<< <r> >> when matching C<"."> after a parse.
+
+CQ keeps track of your preference for keys internally.  That is, if you 
+
+=head1 EXAMPLES
+
+For these examples, the following XML source is assumed.
+
+    <root>
+        <result>OK</result>
+        <data a="this'll be hard to fetch I think" b="I may need special handlers for @queries">
+            <row> <f1>7</f1><f2>11</f2><f3>13</f3></row>
+            <row><f1>17</f1><f2>19</f2><f3>23</f3></row>
+            <row><f1>29</f1><f2>31</f2><f3>37</f3></row>
+        </data>
+        <atad>
+            <c1><f1>503</f1><f1>509</f1></c1>
+            <c2><f1>521</f1><f1>523</f1></c2>
+        </atad>
+    </root>
+
+=head1 OPTIONS
 
 =over 4
 
-=item B<cute_query()>
+=item B<nostrict>
 
-blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg
-blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg
-blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg
-blarg blarg blarg blarg blarg blarg
+CQ crashes in various ways unless your patterns match precisely as you requested
+them.  It may sometimes be desirable to continue matching and return appropriate
+nothings instead.  Use this option to achieve that behavior.
 
-blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg
-blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg
-blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg blarg
-blarg blarg blarg blarg blarg blarg
+    my $CQ = XML::Twigx::CuteQueries
+     ->new->parse("<r><x><y>7</y></x></r>");
+
+    $CQ->cute_query("x/y", ''); # 7
+    $CQ->cute_query("x/z", ''); # croaks()
+    $CQ->cute_query({nostrict=>1}, "x/z", ''); # undef
+
+=item B<recurse_text>
+
+By default, CQ will only return the text from the matched node when requesting
+C<''> results.  If you'd like to return all the text, use this option.
+
+    my $CQ = XML::Twigx::CuteQueries
+     ->new->parse("<r><p>Slow <em>down</em> there dude.</p></r>");
+
+    my $r1 = $CQ->cute_query(p=>'');
+    # Slow  there dude.
+
+    my $r2 = $CQ->cute_query({recurse_text=>1}, p=>'');
+    # Slow down there dude.
+
+Note that CQ doesn't currently support slurping XML (or HTML) from the source
+document.  There are no plans for this either.  If you need it, enter a wishlist
+item on RT.
+
+=item B<nofilter_nontags>
+
+    my $CQ = XML::Twigx::CuteQueries
+     ->new->parse("<r> <x>7</x> <x>8</x></r>");
+
+By default, we skip the C<#PCDATA> "node" before the C<< <x> >>.
+
+    my $r1 = $CQ->cute_query('.'=>[x=>'']);
+    # $r1 is [7]
+
+    my $r2 = $CQ->cute_query({nofilter_nontags=>1}, '.'=>[x=>'']);
+    # $r2 is ['', 7, '', 8]
+
+Preserving the text in a C<#PCDATA> node does seem to require L</recurse_text>.
+
+    my $r3 = $CQ->cute_query(
+        {nofilter_nontags=1, recurse_text=>1},
+        '.'=>[x=>'']);
+    # $r3 is [' ', 7, ' ', 8]
+
+=item B<notrim>
+
+By default, CQ will trim the leading and trailing space on each string result
+without this option.  It will skip the trim on results that contain newlines.
+
+    my $CQ = XML::Twigx::CuteQueries
+     ->new->parse("<r><x> 7</x><x> \n8</x></r>");
+
+    my $r1 = $CQ->cute_query('.'=>[x=>'']);
+    # $r1 is [7, " \n8"]
+
+    my $r2 = $CQ->cute_query({notrim=>1}, '.'=>[x=>'']);
+    # $r2 is [" 7", " \n8"]
 
 =back
+
+=head1 ARRRRG
+
+Consider the following XML.
+
+    <sql_result>
+        <row><field1>x</field1> <field2>y</field2></row>
+    </sql_result>
+
+L<XML::Simple>'s C<XMLin()> will return this.
+
+    { row => { field1 => "x", field2 => "y" } }
+
+Now how about this?
+
+    <sql_result>
+        <row><field1>x</field1> <field2>y</field2></row>
+        <row><field1>z</field1> <field2>w</field2></row>
+    </sql_result>
+
+Now we get this instead:
+
+    { row => [
+          { field1 => "x", field2 => "y" },
+          { field1 => "z", field2 => "w" },
+    ]}
+
+
+Ahh, is C<row> a hashref or an arrayref of hashrefs?  This is the main Arrrg I
+had with L<XML::Simple>.  I'm sure there's a way to solve this with
+L<XML::Simple>, but I wouldn't want to have to figure it out.  The module is
+just too complicated.
+
+=head2 WHY CQ
+
+L<XML::Twig> is pretty easy to use.  I'm also rather fond of L<XML::XPath>.  But
+I found myself writing a great deal of Perl to get data from XML that I felt
+like I should be able to get in one or two lines.
+
+What I wanted was an explicit way to simply query data from the XML without
+working about the problem listed in L</ARRRRG>.
 
 =head1 AUTHOR
 
