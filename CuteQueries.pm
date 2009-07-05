@@ -78,6 +78,8 @@ sub _execute_query {
     my @c  = eval { $re ? grep {$_->gi() =~ $query } $root->children : $root->get_xpath($query) };
     $this->_query_error("while executing \"$query\": $@") if $@;
 
+    @c = grep {$_->gi() !~ m/^#/} @c unless $opts->{nofilter_nontags};
+
     # warn "\@c=".@c."; rt: $rt; query: $query; context: $context\n";
 
     $this->_data_error($rt, "match failed for \"$query\"") unless $opts->{nostrict} or @c;
