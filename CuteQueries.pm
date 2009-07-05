@@ -106,10 +106,21 @@ sub _execute_query {
                     return map { %{$_->{att}} } @c;
                 }
 
-                my @v = values %{$_->{att}};
+                my @v = map { values %{$_->{att}} } @c;
                 $this->_data_error($rt, "expected single match for \"$query\", got " . @v) unless $opts->{nostrict} or @v==1;
                 return $v[0];
             }
+
+            if( $context == LIST ) {
+                return map { $_->{att}{$attr_query} } @c;
+
+            } elsif( $context == KLIST ) {
+                return map { $attr_query => $_->{att}{$attr_query} } @c;
+            }
+
+            my @v = map { $_->{att}{$attr_query} } @c;
+            $this->_data_error($rt, "expected single match for \"$query\", got " . @v) unless $opts->{nostrict} or @v==1;
+            return $v[0];
         }
 
         if( $context == LIST ) {
@@ -148,17 +159,20 @@ sub _execute_query {
         };
 
     } elsif( $rt eq "ARRAY" ) {
-        return [] unless my ($pat, $res) = @$res_type;
+        my @p;
+        while( my ($pat, $res) = splice @$res_type, 0, 2 ) {
+            push @p, [$pat, $res];
+        }
 
         if( $context == LIST ) {
-            return map { [$this->_execute_query($_, $opts, $pat => $res, LIST)] } @c;
+            return map { my $c = $_; [ map {$this->_execute_query($c, $opts, @$_, LIST)} @p ] } @c;
 
         } elsif( $context == KLIST ) {
-            return map { $_->gi => [$this->_execute_query($_, $opts, $pat => $res, LIST)] } @c;
+            return map {my $c = $_; $c->gi => [ map {$this->_execute_query($c, $opts, @$_, LIST)} @p ] } @c;
         }
 
         $this->_data_error($rt, "expected single match for \"$query\", got " . @c) unless $opts->{nostrict} or @c==1;
-        return [ $this->_execute_query($c[0], $opts, $pat => $res, LIST) ];
+        return [ map {$this->_execute_query($c[0], $opts, @$_, LIST)} @p ];
     }
 
     XML::Twigx::CuteQueries::Error->new(text=>"unexpected condition met")->throw;
