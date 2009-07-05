@@ -1,10 +1,10 @@
 
-package XML::Twigx::CuteQueries;
+package XML::CuteQueries;
 
 use strict;
 use warnings;
 use Scalar::Util qw(reftype blessed);
-use XML::Twigx::CuteQueries::Error;
+use XML::CuteQueries::Error;
 use base 'XML::Twig';
 
 use constant SCALAR => 0;
@@ -21,8 +21,8 @@ sub _data_error {
     my $desc = shift || "single-value";
        $desc = shift() . " [$desc result request]";
 
-    XML::Twigx::CuteQueries::Error->new(
-        type => XML::Twigx::CuteQueries::Error::DATA_ERROR(),
+    XML::CuteQueries::Error->new(
+        type => XML::CuteQueries::Error::DATA_ERROR(),
         text => $desc,
     )->throw;
 
@@ -37,8 +37,8 @@ sub _query_error {
     my $f = __FILE__;
     $err =~ s/\s+at\s+\Q$f\E\s+line\s+\d+//;
 
-    XML::Twigx::CuteQueries::Error->new(
-        type => XML::Twigx::CuteQueries::Error::QUERY_ERROR(),
+    XML::CuteQueries::Error->new(
+        type => XML::CuteQueries::Error::QUERY_ERROR(),
         text => $err,
     )->throw;
 
@@ -186,7 +186,7 @@ sub _execute_query {
         return [ map {$this->_execute_query($c[0], $opts, @$_, LIST)} @p ];
     }
 
-    XML::Twigx::CuteQueries::Error->new(text=>"unexpected condition met")->throw;
+    XML::CuteQueries::Error->new(text=>"unexpected condition met")->throw;
     return;
 }
 # }}}

@@ -1,6 +1,6 @@
 =head1 NAME
 
-XML::Twigx::CuteQueries - A cute little query language for converting XML to Perl
+XML::CuteQueries - A cute little query language for converting XML to Perl
 
 =head1 SYNOPSIS
 
@@ -9,15 +9,15 @@ L<XML::Twig> which is a pretty fun way to process XML documents.
 
     use strict;
     use warnings;
-    use XML::Twigx::CuteQueries;
+    use XML::CuteQueries;
 
-    my $CQ = XML::Twigx::CuteQueries->new;
+    my $CQ = XML::CuteQueries->new;
        $CQ->parsefile("example.xml");
 
     my $result = $CQ->cute_query(result=>'');
     my $data   = $CQ->cute_query(data=>[row=>{'*'=>''}]);
 
-L<XML::Twigx::CuteQueries> L<is a|perlvar/@ISA> L<XML::Twig>, so when this
+L<XML::CuteQueries> L<is a|perlvar/@ISA> L<XML::Twig>, so when this
 miniature query language isn't enough for your needs, you can just fall back on
 the Twig methods.
 
@@ -88,7 +88,7 @@ CQ crashes in various ways unless your patterns match precisely as you requested
 them.  It may sometimes be desirable to continue matching and return appropriate
 nothings instead.  Use this option to achieve that behavior.
 
-    my $CQ = XML::Twigx::CuteQueries
+    my $CQ = XML::CuteQueries
      ->new->parse("<r><x><y>7</y></x></r>");
 
     $CQ->cute_query("x/y", ''); # 7
@@ -100,7 +100,7 @@ nothings instead.  Use this option to achieve that behavior.
 By default, CQ will only return the text from the matched node when requesting
 C<''> results.  If you'd like to return all the text, use this option.
 
-    my $CQ = XML::Twigx::CuteQueries
+    my $CQ = XML::CuteQueries
      ->new->parse("<r><p>Slow <em>down</em> there dude.</p></r>");
 
     my $r1 = $CQ->cute_query(p=>'');
@@ -118,7 +118,7 @@ item on RT.
 By default, CQ will trim the leading and trailing space on each string result
 without this option.  It will skip the trim on results that contain newlines.
 
-    my $CQ = XML::Twigx::CuteQueries
+    my $CQ = XML::CuteQueries
      ->new->parse("<r><x> 7</x><x> \n8</x></r>");
 
     my $r1 = $CQ->cute_query('.'=>[x=>'']);
@@ -129,7 +129,7 @@ without this option.  It will skip the trim on results that contain newlines.
 
 =item B<nofilter_nontags>
 
-    my $CQ = XML::Twigx::CuteQueries
+    my $CQ = XML::CuteQueries
      ->new->parse("<r> <x>7</x> <x>8</x></r>");
 
 By default, we skip the C<#PCDATA> "node" before the C<< <x> >>.
@@ -208,4 +208,4 @@ Copyright (c) 2009 Paul Miller
 
 =head1 SEE ALSO
 
-perl(1), L<XML::Twig>, L<XML::Twigx::CuteQueries::Error>
+perl(1), L<XML::Twig>, L<XML::CuteQueries::Error>

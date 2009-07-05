@@ -1,14 +1,14 @@
 =head1 NAME
 
-XML::Twigx::CuteQueries::Error - a simple exception class for CQ
+XML::CuteQueries::Error - a simple exception class for CQ
 
 =head1 SYNOPSIS
 
     use strict;
     use warnings;
-    use XML::Twigx::CuteQueries;
+    use XML::CuteQueries;
 
-    my $twig = XML::Twigx::CuteQueries->new;
+    my $twig = XML::CuteQueries->new;
        $twig->parsefile("something.xml");
 
     unless( eval { $twig->cute_query(...) } ) {
@@ -47,8 +47,8 @@ This is a numeric argument describing the error type.  The only valid choices
 so far are B<DATA_ERROR>s and B<QUERY_ERROR>s.  The symbols aren't exported, so
 you'd invoke them like this:
 
-    XML::Twigx::CuteQueries::Error->new(
-        type => XML::Twigx::CuteQueries::Error::QUERY_ERROR(),
+    XML::CuteQueries::Error->new(
+        type => XML::CuteQueries::Error::QUERY_ERROR(),
 
     )->throw;
 
@@ -59,8 +59,8 @@ This can also be set with L</type()> below.
 
 This is a textual description of the error.
 
-    XML::Twigx::CuteQueries::Error->new(
-        type => XML::Twigx::CuteQueries::Error::QUERY_ERROR(),
+    XML::CuteQueries::Error->new(
+        type => XML::CuteQueries::Error::QUERY_ERROR(),
         text => "that query makes no sense because of the Ten Commandments",
 
     )->throw;
@@ -75,15 +75,15 @@ This can also be set with L</text()> below.
 An I<accessor> for the L</type> of the error.
 
     warn "type: " . $@->type;
-    my $e = XML::Twigx::CuteQueries::Error->new;
-       $e->type( XML::Twigx::CuteQueries::Error::DATA_ERROR() );
+    my $e = XML::CuteQueries::Error->new;
+       $e->type( XML::CuteQueries::Error::DATA_ERROR() );
 
 =item B<text()>
 
 An I<accessor> for the L</text> of the error.
 
     warn "type: " . $@->type;
-    my $e = XML::Twigx::CuteQueries::Error->new;
+    my $e = XML::CuteQueries::Error->new;
        $e->text( "haha, error.  You == fail." );
 
 =item B<query_error()>
@@ -117,4 +117,4 @@ Copyright (c) 2009 Paul Miller
 
 =head1 SEE ALSO
 
-perl(1), L<XML::Twig>, L<XML::Twigx::CuteQueries>
+perl(1), L<XML::Twig>, L<XML::CuteQueries>

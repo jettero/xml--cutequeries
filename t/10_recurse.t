@@ -1,8 +1,8 @@
 
 use Test;
-use XML::Twigx::CuteQueries;
+use XML::CuteQueries;
 
-my $CQ = XML::Twigx::CuteQueries
+my $CQ = XML::CuteQueries
     ->new->parse("<r><p>Slow <em>down</em> there dude.</p></r>");
 
 plan tests => 2;

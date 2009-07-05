@@ -1,8 +1,8 @@
 
 use Test;
-use XML::Twigx::CuteQueries;
+use XML::CuteQueries;
 
-my $CQ = XML::Twigx::CuteQueries->new;
+my $CQ = XML::CuteQueries->new;
    $CQ->parsefile("example.xml");
 
 plan tests => 1;

@@ -1,4 +1,4 @@
-package XML::Twigx::CuteQueries::Error;
+package XML::CuteQueries::Error;
 
 use strict;
 use warnings;

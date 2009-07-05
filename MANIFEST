@@ -5,8 +5,8 @@ CuteQueries/Error.pm
 MANIFEST
 Makefile.PL
 example.xml
-lib/XML/Twigx/CuteQueries.pod
-lib/XML/Twigx/CuteQueries/Error.pod
+lib/XML/CuteQueries.pod
+lib/XML/CuteQueries/Error.pod
 t/01_load.t
 t/02_odd_args.t
 t/03_result_grab.t

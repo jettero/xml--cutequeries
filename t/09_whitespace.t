@@ -1,11 +1,11 @@
 use Test;
-use XML::Twigx::CuteQueries;
+use XML::CuteQueries;
 use Data::Dumper;
 
 $Data::Dumper::Sortkeys = 1;
 $Data::Dumper::Indent   = 0;
 
-my $CQ = XML::Twigx::CuteQueries->new->parse("<r> <x> 7</x> <x> 7  \n</x></r>");
+my $CQ = XML::CuteQueries->new->parse("<r> <x> 7</x> <x> 7  \n</x></r>");
 
 plan tests => 3;
 

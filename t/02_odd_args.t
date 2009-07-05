@@ -1,15 +1,15 @@
 
 use Test;
-use XML::Twigx::CuteQueries;
+use XML::CuteQueries;
 
 plan tests => 4;
 
-my $CQ = XML::Twigx::CuteQueries->new;
+my $CQ = XML::CuteQueries->new;
  # $CQ->parsefile("something.xml");
 
 eval { $CQ->cute_query(1,2,3) };
 
 ok( $@ !~ m/UNKNOWN/i ) or warn " \e[1;33m$@\e[m"; 
 ok( $@, qr/QUERY ERROR.*odd/ );
-ok( $@->type, XML::Twigx::CuteQueries::Error::QUERY_ERROR );
+ok( $@->type, XML::CuteQueries::Error::QUERY_ERROR );
 ok( $@->query_error );

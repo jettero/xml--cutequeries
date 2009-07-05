@@ -1,12 +1,12 @@
 
 use Test;
-use XML::Twigx::CuteQueries;
+use XML::CuteQueries;
 use Data::Dumper;
 
 $Data::Dumper::Sortkeys = 1;
 $Data::Dumper::Indent   = 0;
 
-my $CQ = XML::Twigx::CuteQueries->new;
+my $CQ = XML::CuteQueries->new;
    $CQ->parsefile("example.xml");
 
 my $exemplar1 = Dumper([ 
