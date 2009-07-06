@@ -174,15 +174,28 @@ sub cute_query {
         $this->_query_error("no such query option \"$_\"") unless $VALID_OPTS{$_};
     }
 
+    my $context = LIST;
+       $context = KLIST if delete $opts->{klist};
+
     $this->_pre_parse_queries($opts, @_);
 
     my @result;
+    my ($query, $res_type) = @_; # used in error below
 
     while( my @q = splice @_, 0, 2 ) {
-        push @result, $this->_execute_query($this->root, $opts, @q);
+        push @result, $this->_execute_query($this->root, $opts, @q, $context);
     }
 
-    return $result[0] unless wantarray; # we never want the size of the array, preferring the first match
+    unless( wantarray ) {
+
+        unless( $opts->{nostrict} or @result==1 ) {
+            my $rt = (defined $res_type and reftype $res_type) || '';
+            $this->_data_error($rt, "expected exactly one match for \"$query\", got " . @result)
+        }
+
+        return $result[0]; # we never want the size of the array, preferring the first match
+    }
+
     return @result;
 }
 
