@@ -16,6 +16,9 @@ L<XML::Twig> which is a pretty fun way to process XML documents.
 
     my $result = $CQ->cute_query(result=>'');
     my $data   = $CQ->cute_query(data=>[row=>{'*'=>''}]);
+    my @data   = $CQ->cute_query("/data/row/*" => '');
+    my %fields = $CQ->hash_query("/data/row[1]/*" => '');
+    my @rows   = $CQ->cute_query("/data/row" => {'*'=>''});
 
 L<XML::CuteQueries> L<is a|perlvar/@ISA> L<XML::Twig>, so when this
 miniature query language isn't enough for your needs, you can just fall back on
@@ -31,8 +34,8 @@ details on the author's perception of unpredictability using L<XML::Simple>).
 =head1 CUTE QUERIES
 
 This module uses the Perl parser to implement a miniature query language called
-I<cute queries>.  They queries are not proper Perl code in the traditional
-sense.
+I<Cute Queries>.  The queries are not proper Perl code in the traditional sense.
+Although, they do parse as perl.
 
 Cute queries are made up of pairs:
 
@@ -60,9 +63,84 @@ time.  Suppose the XML is C<< <r><x>7</x><y>8</y></r> >>,
 
 =head2 B<C<$the_target_data_type>>
 
+There are three basic target shapes.
+
+=over 4
+
+=item B<C<''>>
+
+The simplest target shape is C<''>.  Actually, non-reference scalar will do the
+trick.  You cold use the string C<"data">, a C<0>, or even an
+L<undef|perlfunc/undef>.
+
+This means you'd like for the request to result in the string value of the
+matches.
+
+    my $res = $CQ->cute_query(field_name => '');
+    # just returns the string in the <field_name> element.
+
+This may produce an error if there's more than one C<< <field_name> >> though.
+CQ will notice that the query is in a scalar context and will raise an error if
+there's more than one match.
+
+You can disable this behavior and instead return the I<first> match.  See
+L</OPTIONS> for the full story on options.
+
+    my $first_match = $CQ->cute_query( {nostrict=>1}, field_name=>1 );
+    # return the first match, presuming there may be more than
+    # one <field_name>
+
+=item B<C<[]>>
+
+The result shape of C<[]> indicates that what you're requesting should point to
+an arrayref of items.  Those items are then named in a I<sub-query>.
+
+    my @data = $CQ->cute_query( "data" => [] );
+    # returns one empty arrayref for each <data> element matched
+
+Typically, you would then put a I<sub-query> in the arrayref to indicate how to fill
+it.  In the example below using the XML from L</EXAMPLES>, C<@data> would
+contain one arrayref for each C<< <data> >> element.  There would be one hashref
+for each C<< <row> >> element in the C<< <data> >> element, and that hashref
+would be filled with one key/value pair for each field in the row.
+
+    my @data = $CQ->cute_query( data=>[row=>{'*'=>''}] );
+
+A I<sub-query> inside an arrayref (C<[]>) will have a preference for
+I<not returning> the names of the tags it matches.
+
+=item B<C<{}>>
+
+The result shape of C<{}> indicates that what you're requesting should point to
+a hashref of items.  Those items are then named in a I<sub-query>.
+
+    my @data = $CQ->cute_query( "data/row" => {} );
+    # returns one empty hashref for each row in each data element
+
+Typically, you would then put a I<sub-query> in the hashref to indicate how to
+fill it.  In the example below using the XML from L</EXAMPLES>, C<@data> would
+contain one hashref for each C<< <row> >> element that is a chiled of a
+C<< <data> >> element.  Each hashref is filled with key/value pairs for each
+field in the row.
+
+    my @data = $CQ->cute_query( "data/row" => {'*'=>''} );
+
+A I<sub-query> inside an hashref (C<{}>) will have a preference for I<returning>
+the names of the tags it matches as the keys of the values it finds.
+
+=back
+
 CQ keeps track of your preference for keys internally.  That is, if you want to
 fill a hashref, it will return keys (the tag names) for the matched tags along
-with the values.
+with the values.  Again, using the XML input data from L</EXAMPLES>, the
+C<@ar_data> below will will not have field names, but the C<@hr_data> will.
+
+    my @hr_data = $CQ->cute_query( "data/row" => {'*'=>''} );
+    # ( {f1=>"blah", f2=>...}, {...}, ...)
+
+    my @ar_data = $CQ->cute_query( "data/row" => ['*'=>''] );
+    # ( ["blah", "blah"], [...], ...)
+    # same thing without the key names
 
 =head1 EXAMPLES
 
@@ -82,6 +160,41 @@ following XML source is assumed.
         </atad>
     </root>
 
+=head2 B<Example 1>
+
+Grab the contents of each C<< <row> >> of each C<< <data> >> as an array ref of
+hashrefs, with each key of each hashref being the name of the field tag and each
+value the contents of the field tag.
+
+    my $arrayref_of_hashrefs = $CQ->cute_query(
+        # the top level query is for the <data> elements
+        # the shape of the only top level query is [],
+        # so it returns one [] -- for the one <data> element
+        "data" => [
+            # the contents of the top level [] is a sub query for row elements.
+            # Each row element should be a hashref, so the data-[] will contain
+            # three row-{} hashrefs
+            row => {
+                # the contents of those hashrefs is a subquery for any tag found
+                # there.  The tag names are preserved as keys because we're
+                # sitting in the context of a hashref.
+                # the shape of each match result is '', so it just returns the
+                # contents of each tag as a string.
+                '*' => '',
+            }
+        ],
+    );
+
+The resulting Perl structure for this query is as follows:
+
+    [ {f1=> 7, f2=>11, f3=>13},
+      {f1=>17, f2=>19, f3=>23},
+      {f1=>29, f2=>31, f3=>37}, ]
+
+=head2 B<Example 2>
+
+=head2 B<Example 3>
+
 =head1 METHODS
 
 =over 4
@@ -95,6 +208,19 @@ This function can take any number of arguments.
 If the first argument is a hash ref, it's assumed to be an
 L<options hashref|/OPTIONS>.  Otherwise, all arguments are assumed to be
 L<query pairs|/CUTE QUERIES>.
+
+The top level query tries to act like a I<sub-query> inside an arrayref L</[]>,
+that is, it throws out the names of the matched tags and just returns the
+values.
+
+=item B<hash_query()> B<klist_query()>
+
+This function is a wrapper for L</cute_query()> which simply adds the L</klist>
+option to the query.
+
+What this does in practice: it makes the query to act like a I<sub-query> inside
+an hashref L</{}>, that is, it uses the matched tag names as keys and returns a
+list of key/value pairs for the matched data.
 
 =item B<parse()>
 
@@ -124,6 +250,19 @@ nothings instead.  Use this option to achieve that behavior.
     $CQ->cute_query("x/y", ''); # 7
     $CQ->cute_query("x/z", ''); # croaks()
     $CQ->cute_query({nostrict=>1}, "x/z", ''); # undef
+
+=item B<klist>
+
+By default, the top level L</cute_query()> will try to return a list (without
+the matched tag names as keys).  Using this option will tell the top level to
+preserve the matched field names and return a list of key/value pairs rather
+than just the values.
+
+    my @a = $CQ->cute_query("x"=>''): # match all <x> and return values as list
+    my %h = $CQ->cute_query("*"=>''):
+    # match all top level tags and return tag-name/value pairs
+
+This can alternately be invoked by calling L</hash_query()>.
 
 =item B<recurse_text>
 
