@@ -7,7 +7,6 @@ use Scalar::Util qw(reftype blessed);
 use XML::CuteQueries::Error;
 use base 'XML::Twig';
 
-use constant SCALAR => 0;
 use constant LIST   => 1;
 use constant KLIST  => 2;
 
@@ -61,7 +60,7 @@ sub _pre_parse_queries {
 # _execute_query {{{
 sub _execute_query {
     my ($this, $root, $opts, $query, $res_type, $context) = @_;
-    $context = SCALAR unless defined $context and caller eq __PACKAGE__;
+    $context = LIST if not defined $context or $context<1 or $context>2;
 
     my $rt = (defined $res_type and reftype $res_type) || '';
     my $re = ref($query) eq "Regexp";
@@ -110,64 +109,41 @@ sub _execute_query {
     if( not $rt ) {
         if( $attr_query ) {
             if( $attr_query eq "*" ) {
-                if( $context == LIST ) {
-                    return $_trimlist->( map { values %{$_->{att}} } @c );
-
-                } elsif( $context == KLIST ) {
+                if( $context == KLIST ) {
                     return $_trimhash->( map { %{$_->{att}} } @c );
                 }
 
-                my @v = map { values %{$_->{att}} } @c;
-                $this->_data_error($rt, "expected single match for \"$query\", got " . @v) unless $opts->{nostrict} or @v==1;
-                return ($_trimlist->($v[0]))[0];
+                return $_trimlist->( map { values %{$_->{att}} } @c );
             }
 
-            if( $context == LIST ) {
-                return $_trimlist->( map { $_->{att}{$attr_query} } @c );
-
-            } elsif( $context == KLIST ) {
+            if( $context == KLIST ) {
                 return $_trimhash->( map { $attr_query => $_->{att}{$attr_query} } @c );
             }
 
-            my @v = map { $_->{att}{$attr_query} } @c;
-            $this->_data_error($rt, "expected single match for \"$query\", got " . @v) unless $opts->{nostrict} or @v==1;
-            return ($_trimlist->($v[0]))[0];
+            return $_trimlist->( map { $_->{att}{$attr_query} } @c );
         }
 
-        if( $context == LIST ) {
-            return $_trimlist->( map { $_->text      } @c ) if $opts->{recurse_text};
-            return $_trimlist->( map { $_->text_only } @c );
-
-        } elsif( $context == KLIST ) {
+        if( $context == KLIST ) {
             return $_trimhash->( map { $_->gi => $_->text      } @c ) if $opts->{recurse_text};
             return $_trimhash->( map { $_->gi => $_->text_only } @c );
-
         }
 
-        $this->_data_error($rt, "expected single match for \"$query\", got " . @c) unless $opts->{nostrict} or @c==1;
-
-        my $result = $opts->{recurse_text} ? $c[0]->text : $c[0]->text_only;
-        return ($_trimlist->($result))[0];
+        return $_trimlist->( map { $_->text      } @c ) if $opts->{recurse_text};
+        return $_trimlist->( map { $_->text_only } @c );
 
     } elsif( $rt eq "HASH" ) {
-        if( $context == LIST ) {
-            return map {
-                my $c = $_;
-                scalar # I don't think I should need this word here, but I clearly do
-                {map {$this->_execute_query($c, $opts, $_ => $res_type->{$_}, KLIST)} keys %$res_type};
-            } @c;
-
-        } elsif( $context == KLIST ) {
+        if( $context == KLIST ) {
             return map {
                 my $c = $_;
                 $_->gi => {map { $this->_execute_query($c, $opts, $_ => $res_type->{$_}, KLIST) } keys %$res_type}
             } @c;
         }
 
-        $this->_data_error($rt, "expected single match for \"$query\", got " . @c) unless $opts->{nostrict} or @c==1;
-        return {
-            map { $this->_execute_query($c[0], $opts, $_ => $res_type->{$_}, KLIST) } keys %$res_type
-        };
+        return map {
+            my $c = $_;
+            scalar # I don't think I should need this word here, but I clearly do
+            {map {$this->_execute_query($c, $opts, $_ => $res_type->{$_}, KLIST)} keys %$res_type};
+        } @c;
 
     } elsif( $rt eq "ARRAY" ) {
         my @p;
@@ -175,15 +151,11 @@ sub _execute_query {
             push @p, [$pat, $res];
         }
 
-        if( $context == LIST ) {
-            return map { my $c = $_; [ map {$this->_execute_query($c, $opts, @$_, LIST)} @p ] } @c;
-
-        } elsif( $context == KLIST ) {
+        if( $context == KLIST ) {
             return map {my $c = $_; $c->gi => [ map {$this->_execute_query($c, $opts, @$_, LIST)} @p ] } @c;
         }
 
-        $this->_data_error($rt, "expected single match for \"$query\", got " . @c) unless $opts->{nostrict} or @c==1;
-        return [ map {$this->_execute_query($c[0], $opts, @$_, LIST)} @p ];
+        return map { my $c = $_; [ map {$this->_execute_query($c, $opts, @$_, LIST)} @p ] } @c;
     }
 
     XML::CuteQueries::Error->new(text=>"unexpected condition met")->throw;
@@ -205,10 +177,10 @@ sub cute_query {
     my @result;
 
     while( my @q = splice @_, 0, 2 ) {
-        push @result, scalar $this->_execute_query($this->root, $opts, @q);
+        push @result, $this->_execute_query($this->root, $opts, @q);
     }
 
-    return $result[0] unless wantarray; # we never want the size of the array
+    return $result[0] unless wantarray; # we never want the size of the array, preferring the first match
     return @result;
 }
 
