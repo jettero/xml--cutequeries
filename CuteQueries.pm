@@ -199,4 +199,14 @@ sub cute_query {
     return @result;
 }
 
+sub hash_query {
+    my $this = shift;
+    my $opts = {};
+       $opts = shift if ref($_[0]) eq "HASH";
+
+    $opts->{klist} = 1;
+    $this->cute_query($opts, @_);
+}
+*klist_query = \&hash_query;
+
 1;
