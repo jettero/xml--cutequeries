@@ -5,3 +5,4 @@ Makefile.PL
 ^\.pm-desc
 blib
 ^\.st
+\.pm-desc.html
