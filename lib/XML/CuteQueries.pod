@@ -41,13 +41,17 @@ Cute queries are made up of pairs:
 
     $what_you_are_requesting => $the_target_data_shape
 
+This detailed description here may be easier to follow if you take a look at the
+L</EXAMPLES> section first -- it probably depends on your temperament.
+
 =head2 B<C<$what_you_are_requesting>>
 
 The C<$what_you_are_requesting> is specified with either
 L<XPath|http://www.w3.org/TR/xpath> (as supported by L<XML::Twig>) or with
 regular expressions.  Matching starts at the root element, rather than the
-document.  This slightly differs from twig.  Pretend your XML is
-C<< <r><x><y>7</y></x></r> >>,
+document.  This slightly differs from twig.
+
+    $CQ->parse("<r><x><y>7</y></x></r>");
 
     my $res = $CQ->cute_query("." => ['//y'=>]); # $res is [7]
     my $res = $CQ->cute_query("x/y" => ''); # $res is 7
@@ -56,10 +60,30 @@ In pure twig, C<$twig->get_xpath("x/y")> would return an empty list (since the
 document starts at C</> instead of C<< <r> >>.
 
 Regular expression selectors are matched against each direct descendant one at a
-time.  Suppose the XML is C<< <r><x>7</x><y>8</y></r> >>,
+time.
+
+    $CQ->parse("<r><x>7</x><y>8</y></r>");
 
     my $res = $CQ->cute_query('.' => {qr([xy]) => ''});
     # $res is { x=>7, y=>8 }
+
+In addition to regular expressions and L<XML::Twig>'s lighter version of XPath
+(there is a heavy version, but it is unused here) CQ also supports a light
+version of the attribute selector.
+
+    $CQ->parse("<r> <d a='1' b='2'/> <d a='3' b='4'/> </r>");
+
+    my @a = $CQ->cute_query('/r/d/@a'=>'', '/r/d/@b'=>'', 'd/@*'=>'');
+    # @a = (1,2, 1,2,3,4)
+
+CQ also supports an attribute selector that's completely illegal in real life
+XPath: C<@*>.
+
+    my @a = $CQ->cute_query(d=>{'@*'=>''});
+    # @a = ({a=>1, b=>2}, {a=>3, b=>4})
+
+The attribute matching XPath (and non XPath) expressions are limited to
+attributes at the tail end of the path.  (Is there another kind?)
 
 =head2 B<C<$the_target_data_type>>
 
