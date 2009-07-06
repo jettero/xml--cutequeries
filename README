@@ -1,0 +1,45 @@
+
+CQ is a cute little query language that uses the Perl parser to
+describe what the user would like to get from an XML document.
+CQ addresses various shortcomings of XML::Simple, which is not
+very simple.  XML::Simple can't be simple because importing XML
+structures to Perl structures is not a 1:1 mapping.
+
+There's no way XML::Simple can guess that you mean for rows to
+always be an arrayref, so you must specify it.  CQ gives you the
+means to specify the conversion you have in mind concisely.
+
+    <data>
+        <row><f1>data</f1><f2>data</f2></row>
+    </data>
+
+    my $res = XMLin()
+    $res = {
+      row => { f1 => "data", f2 => "data" },
+    }
+
+row is a hashref
+
+    <data>
+        <row><f1>data</f1><f2>data</f2></row>
+        <row><f1>data</f1><f2>data</f2></row>
+    </data>
+
+    my $res = XMLin()
+    $res = {
+      row => [
+               { f1 => "data", f2 => "data" },
+               { f1 => "data", f2 => "data" },
+             ],
+    }
+
+row is an arrayref of hashrefs
+
+Admittedly, this query language must be learned, but it's
+fairly intuitive.
+
+    my @row = $CQ->cute_query(row=>{'*'=>''});
+    @row = (
+        { f1=>'data', f2=>'data' },
+        { f1=>'data', f2=>'data' },
+    );

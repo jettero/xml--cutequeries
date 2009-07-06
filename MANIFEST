@@ -1,9 +1,11 @@
 .perlcriticrc
+.todo
 Changes
 CuteQueries.pm
 CuteQueries/Error.pm
 MANIFEST
 Makefile.PL
+README
 example.xml
 lib/XML/CuteQueries.pod
 lib/XML/CuteQueries/Error.pod
@@ -20,4 +22,3 @@ t/10_recurse.t
 t/critic.t
 t/pod.t
 t/pod_coverage.t
-.todo
