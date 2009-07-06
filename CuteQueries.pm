@@ -60,7 +60,9 @@ sub _pre_parse_queries {
 # _execute_query {{{
 sub _execute_query {
     my ($this, $root, $opts, $query, $res_type, $context) = @_;
-    $context = LIST if not defined $context or $context<1 or $context>2;
+
+    XML::CuteQueries::Error->new(text=>"\$context specification error")->throw
+        if not defined $context or $context<1 or $context>2;
 
     my $rt = (defined $res_type and reftype $res_type) || '';
     my $re = ref($query) eq "Regexp";
