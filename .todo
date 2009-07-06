@@ -1,5 +1,5 @@
 <todo version="0.1.19">
-    <note priority="high" time="1246846232">
+    <note priority="high" time="1246846232" done="1246877202">
         finish eraticating the scalar results in favor of KLIST/LIST only results
     </note>
     <note priority="medium" time="1246846239">
