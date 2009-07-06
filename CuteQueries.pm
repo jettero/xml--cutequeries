@@ -12,7 +12,7 @@ use constant KLIST  => 2;
 
 our $VERSION = '0.5000';
 
-our %VALID_OPTS = (map {$_=>1} qw(nostrict recurse_text nofilter_nontags notrim));
+our %VALID_OPTS = (map {$_=>1} qw(nostrict recurse_text nofilter_nontags notrim klist));
 
 # _data_error {{{
 sub _data_error {
@@ -165,6 +165,7 @@ sub _execute_query {
 }
 # }}}
 
+# cute_query {{{
 sub cute_query {
     my $this = shift;
     my $opts = {};
@@ -198,15 +199,18 @@ sub cute_query {
 
     return @result;
 }
+# }}}
 
+# hash_query {{{
 sub hash_query {
     my $this = shift;
     my $opts = {};
        $opts = shift if ref($_[0]) eq "HASH";
 
     $opts->{klist} = 1;
-    $this->cute_query($opts, @_);
+    return $this->cute_query($opts, @_);
 }
 *klist_query = \&hash_query;
+# }}}
 
 1;
