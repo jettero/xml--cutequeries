@@ -26,7 +26,7 @@ I<remain simple>, something L<XML::Simple> forgot to do.
 
 There is only one user method in this module and it just uses L<XML::Twig> to
 return the data you asked for in a predicable perl structure (see L</ARRRRG> for
-details on the author's perceived unpredictability of L<XML::Simple>).
+details on the author's perception of unpredictability using L<XML::Simple>).
 
 =head1 CUTE QUERIES
 
@@ -36,25 +36,29 @@ sense.
 
 Cute queries are made up of pairs:
 
-    $what_you_are_requesting => $how_you_would_like_it
+    $what_you_are_requesting => $the_target_data_shape
 
 =head2 B<C<$what_you_are_requesting>>
 
 The C<$what_you_are_requesting> is specified with either
 L<XPath|http://www.w3.org/TR/xpath> (as supported by L<XML::Twig>) or with
-regular expressions.  Regular expression selectors are matched against each
-direct descendant one at a time, while the xpath selectors use Twig's internal
-matching mechanisms to flit around the document willy nilly.
+regular expressions.  Matching starts at the root element, rather than the
+document.  This slightly differs from twig.  Pretend your XML is
+C<< <r><x><y>7</y></x></r> >>,
 
-Matching starts at the root element, rather than the document.  This slightly
-differs from twig.  Pretend your XML is C<< <r><x><y>7</y></x></r> >>,
-C<$CQ->cute_query('x/y'=>'')> will return C<7>, while Twig (i.e.,
-C<$twig->get_xpath("x/y")> would return an empty list (since the document starts
-at C</> instead of C<< <r> >>.
+    my $res = $CQ->cute_query("." => ['//y'=>]); # $res is [7]
+    my $res = $CQ->cute_query("x/y" => ''); # $res is 7
 
-CQ will also return C<< <r> >> when matching C<"."> after a parse.
+In pure twig, C<$twig->get_xpath("x/y")> would return an empty list (since the
+document starts at C</> instead of C<< <r> >>.
 
-=head2 B<C<$how_you_would_like_it>>
+Regular expression selectors are matched against each direct descendant one at a
+time.  Suppose the XML is C<< <r><x>7</x><y>8</y></r> >>,
+
+    my $res = $CQ->cute_query('.' => {qr([xy]) => ''});
+    # $res is { x=>7, y=>8 }
+
+=head2 B<C<$the_target_data_type>>
 
 CQ keeps track of your preference for keys internally.  That is, if you want to
 fill a hashref, it will return keys (the tag names) for the matched tags along
