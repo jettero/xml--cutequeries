@@ -4,8 +4,8 @@ XML::CuteQueries - A cute little query language for converting XML to Perl
 
 =head1 SYNOPSIS
 
-This is a cross between L<XML::Simple> (which isn't simple at all) and
-L<XML::Twig> which is a pretty fun way to process XML documents.
+This module produces results rather like L<XML::Simple>, but without the
+ambiguity problems inherent in going from XML to Perl.
 
     use strict;
     use warnings;
@@ -20,7 +20,7 @@ L<XML::Twig> which is a pretty fun way to process XML documents.
     my %fields = $CQ->hash_query("/data/row[1]/*" => '');
     my @rows   = $CQ->cute_query("/data/row" => {'*'=>''});
 
-L<XML::CuteQueries> L<is a|perltoot/Inheritance> L<XML::Twig>, so when this
+L<XML::CuteQueries> L<is an|perltoot/Inheritance> L<XML::Twig>, so when this
 miniature query language isn't enough for your needs, you can just fall back on
 the Twig methods.
 
@@ -28,7 +28,8 @@ This module isn't likely to do a lot more than the above so it can
 I<remain simple>, something L<XML::Simple> forgot to do.
 
 There is only one user method in this module and it just uses L<XML::Twig> to
-return the data you asked for in a predicable perl structure (see L</ARRRRG> for
+return the data you asked for in a predicable perl structure (see
+L</SIMPLE AMBIGUITIES> for
 details on the author's perception of unpredictability using L<XML::Simple>).
 
 Philosophically, this module aims to be really simple, but it does implement a
@@ -401,7 +402,7 @@ seems to require L</recurse_text>.
 
 =back
 
-=head1 ARRRRG
+=head1 SIMPLE AMBIGUITIES
 
 Consider the following XML.
 
@@ -440,7 +441,7 @@ I found myself writing a great deal of Perl to get data from XML that I felt
 like I should be able to get in one or two lines.
 
 What I wanted was an explicit way to query data from the XML without
-worrying about the problem listed in L</ARRRRG>.
+worrying about the problem listed in L</SIMPLE AMBIGUITIES>.
 
 =head1 AUTHOR
 
