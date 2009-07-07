@@ -20,7 +20,7 @@ L<XML::Twig> which is a pretty fun way to process XML documents.
     my %fields = $CQ->hash_query("/data/row[1]/*" => '');
     my @rows   = $CQ->cute_query("/data/row" => {'*'=>''});
 
-L<XML::CuteQueries> L<is a|perlvar/@ISA> L<XML::Twig>, so when this
+L<XML::CuteQueries> L<is a|perltoot/Inheritance> L<XML::Twig>, so when this
 miniature query language isn't enough for your needs, you can just fall back on
 the Twig methods.
 
@@ -30,6 +30,10 @@ I<remain simple>, something L<XML::Simple> forgot to do.
 There is only one user method in this module and it just uses L<XML::Twig> to
 return the data you asked for in a predicable perl structure (see L</ARRRRG> for
 details on the author's perception of unpredictability using L<XML::Simple>).
+
+Philosophically, this module aims to be really simple, but it does have a query
+language that must be learned.  It may be easier to skip ahead to the
+L<examples|/EXAMPLES>.  The details of Cute Queries follow.
 
 =head1 CUTE QUERIES
 
@@ -381,8 +385,8 @@ L<XML::Twig> is pretty easy to use.  I'm also rather fond of L<XML::XPath>.  But
 I found myself writing a great deal of Perl to get data from XML that I felt
 like I should be able to get in one or two lines.
 
-What I wanted was an explicit way to simply query data from the XML without
-working about the problem listed in L</ARRRRG>.
+What I wanted was an explicit way to query data from the XML without
+worrying about the problem listed in L</ARRRRG>.
 
 =head1 AUTHOR
 
