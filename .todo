@@ -5,13 +5,13 @@
     <note priority="medium" time="1246846281" done="1246918121">
         create a cute_query_klist() or klist_query() or something
     </note>
-    <note priority="medium" time="1246846239">
+    <note priority="medium" time="1246846239" done="1246986715">
         finish the docs
-        <note priority="medium" time="1246846256">
-            make sure the queries are a lot more clear than they are now
-        </note>
         <note priority="medium" time="1246846314" done="1246918129">
             make sure the wantarray vs return $matches[0] thing is really clear, because the behavior will be unexpected
+        </note>
+        <note priority="medium" time="1246846256" done="0">
+            make sure the queries are a lot more clear than they are now
         </note>
     </note>
 </todo>
