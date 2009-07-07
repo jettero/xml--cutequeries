@@ -447,12 +447,12 @@ worrying about the problem listed in L</SIMPLE AMBIGUITIES>.
 
 Paul Miller C<< <jettero@cpan.org> >>
 
-I am using this software in my own projects...  If you find bugs, please
-please please let me know.  Actually, let me know if you find it handy at
-all.  Half the fun of releasing this stuff is knowing that people use it.
+This is an elaborate brainstorming exercise, although I'm pretty happy with the
+result.  If you have ideas to make it better, need help, or just plain want to
+say hi ... shoot me an email.  I love to hear from people.
 
-If you see anything wrong with the callbacks, the docs, or anything:  Definitely
-let me know!  rt.cpan, irc, email, whatever.  Just let me know.
+If there are bugs, or wishlist items, please choose
+L<rt.cpan.org|http://rt.cpan.org/Public/Dist/Display.html?Name=XML-CuteQueries>
 
 =head1 COPYRIGHT
 
