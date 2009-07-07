@@ -31,8 +31,8 @@ There is only one user method in this module and it just uses L<XML::Twig> to
 return the data you asked for in a predicable perl structure (see L</ARRRRG> for
 details on the author's perception of unpredictability using L<XML::Simple>).
 
-Philosophically, this module aims to be really simple, but it does have a query
-language that must be learned.  It may be easier to skip ahead to the
+Philosophically, this module aims to be really simple, but it does implement a
+query language that must be learned.  It may be easier to skip ahead to the
 L<examples|/EXAMPLES>.  The details of Cute Queries follow.
 
 =head1 CUTE QUERIES
