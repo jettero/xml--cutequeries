@@ -447,9 +447,9 @@ worrying about the problem listed in L</SIMPLE AMBIGUITIES>.
 
 Paul Miller C<< <jettero@cpan.org> >>
 
-This is an elaborate brainstorming exercise, although I'm pretty happy with the
-result.  If you have ideas to make it better, need help, or just plain want to
-say hi ... shoot me an email.  I love to hear from people.
+This module represents an elaborate brainstorming exercise, although I'm pretty
+happy with the result.  If you have ideas to make it better, need help, or just
+plain want to say hi ... shoot me an email.  I love to hear from people.
 
 If there are bugs, or wishlist items, please choose
 L<rt.cpan.org|http://rt.cpan.org/Public/Dist/Display.html?Name=XML-CuteQueries>
