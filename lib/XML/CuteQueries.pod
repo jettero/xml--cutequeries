@@ -221,7 +221,61 @@ The resulting Perl structure for this query is as follows:
 
 =head2 B<Example 2>
 
+Grab the contents of all the C<< <f1> >> tags anywhere in the document.
+
+    my @f1s = $CQ->cute_query( "//f1" => '' );
+    # the result is: (7, 17, 29, 503, 509, 521, 523)
+
+All the contents of C<< <f1> >> tags that are children of tags that are children
+of the C<< <atad> >> tag.  Use the tags found as keys of a hash and return the
+f1-contents as arrayrefs.
+
+    my %C = $CQ->hash_query( # return key-value pairs rather than just values
+        "atad/*" => [ # find all elements that are children of the atad
+            f1=>'' # fill the arrayref for each atad/* with the contents of f1
+                   # elements
+        ]
+    );
+
+    # the result is: (c1 => [503, 509], c2 => [521, 523])
+
 =head2 B<Example 3>
+
+Grab the contents of the C<@a> and C<@b> attributes of the C<< <data> >> tag
+(using the attr names as keys), along with all the values of the C<< <f3> >>
+tags.  Give us the C<< <f3> >>s as an arrayref under the key C<"data"> and
+return the whole mess as a hash.
+
+    my %h = $CQ->hash_query( # preserve keys
+        "data/@*" => '', # grab the attrs
+        data => [ f3 => '' ], # grab the data, subquery to find the f3s
+    );
+
+=head2 B<Example 4>
+
+Get what L<XML::Simple> would get from the document.  Note that you have to be
+about a million times more explicit and there's no way to automate any of the
+query generation.
+
+    my $hashref = $CQ->cute_query(
+        '.' => {
+            result => '',
+            data => [ row => {'*'=>''} ],
+            atad => { '*' => [ '*' => ''] },
+        }
+    );
+
+It produces this:
+
+    my $hashref = {
+        result => "OK",
+
+        data => [ {f1=> 7, f2=>11, f3=>13},
+                  {f1=>17, f2=>19, f3=>23},
+                  {f1=>29, f2=>31, f3=>37}, ]
+
+        atad => { c1 => [503, 509], c2 => [521, 523] },
+    };
 
 =head1 METHODS
 
