@@ -443,6 +443,18 @@ like I should be able to get in one or two lines.
 What I wanted was an explicit way to query data from the XML without
 worrying about the problem listed in L</SIMPLE AMBIGUITIES>.
 
+=head1 THANKS
+
+=over 4
+
+=item Hans Dieter Pearcey C<< <?????@weftsoar.net> >>
+
+I did not know there wasn't a C<< L<text|scheme:> >>.  Why doesn't Test::Pod
+notice this?  (He also fixed an ugly doc bug, implying he actually read the
+docs.  Neat.)
+
+=back
+
 =head1 AUTHOR
 
 Paul Miller C<< <jettero@cpan.org> >>
