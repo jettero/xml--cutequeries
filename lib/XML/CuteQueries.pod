@@ -342,7 +342,7 @@ preserve the matched field names and return a list of key/value pairs rather
 than just the values.
 
     my @a = $CQ->cute_query("x"=>''): # match all <x> and return values as list
-    my %h = $CQ->cute_query("*"=>''):
+    my %h = $CQ->cute_query({ klist => 1 }, "*"=>''):
     # match all top level tags and return tag-name/value pairs
 
 This can alternately be invoked by calling L</hash_query()>.
@@ -452,7 +452,7 @@ happy with the result.  If you have ideas to make it better, need help, or just
 plain want to say hi ... shoot me an email.  I love to hear from people.
 
 If there are bugs, or wishlist items, please choose
-L<rt.cpan.org|http://rt.cpan.org/Public/Dist/Display.html?Name=XML-CuteQueries>
+L<http://rt.cpan.org/Public/Dist/Display.html?Name=XML-CuteQueries>
 
 =head1 COPYRIGHT
 
