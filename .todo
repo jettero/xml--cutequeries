@@ -16,7 +16,7 @@
     </note>
     <note priority="medium" time="1247192228">
         we need some way to handle real life queries like the tda-login xml (nda, don't ask) ...
-        <note priority="medium" time="1247192239">
+        <note priority="medium" time="1247192239" done="1247223927">
             so I need some kind of example xml to show what I mean
         </note>
         <note priority="medium" time="1247192254">

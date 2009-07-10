@@ -7,6 +7,7 @@ MANIFEST
 Makefile.PL
 README
 example.xml
+example2.xml
 lib/XML/CuteQueries.pod
 lib/XML/CuteQueries/Error.pod
 t/01_load.t
