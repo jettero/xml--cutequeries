@@ -64,31 +64,67 @@ document.  This slightly differs from twig.
 In pure twig, C<$twig->get_xpath("x/y")> would return an empty list (since the
 document starts at C</> instead of C<< <r> >>.
 
+=item B<XPATH QUERIES>
+
+The recommended interface for most queries is XPath.  The interface is
+L<XML::Twig>'s lighter version of XPath (there is a heavy version, but it is
+unused here).  See L<XML::Twig/CLASSES> for a brief description of this.
+
+This interface will most likely be faster than the L</REGULAR EXPRESSION QUERIES>
+in most cases.  Therefore, most of the examples in this document are XPath
+queries.
+
+=item B<REGULAR EXPRESSION QUERIES>
+
 Regular expression selectors are matched against each direct descendant one at a
 time.
 
     $CQ->parse("<r><x>7</x><y>8</y></r>");
 
-    my $res = $CQ->cute_query('.' => {qr([xy]) => ''});
+    my $res = $CQ->cute_query('.' => {'<re>[xy]</re>' => ''});
     # $res is { x=>7, y=>8 }
 
-In addition to regular expressions and L<XML::Twig>'s lighter version of XPath
-(there is a heavy version, but it is unused here) CQ also supports a light
-version of the attribute selector.
+Note that the regular expression is rather like an XPath query, except that it
+is surrounded by C<< <re> >> tags.  It might have been preferable to simply use
+pre-compiled regular expressions, rather than requiring string manipulation,
+except for the fact that C<Regexp> references cannot be meaningfully used as
+hash keys!
+
+    # Example of why this doesn't work:
+    my $hashref = { qr(key) => 1 }; 
+
+    # It turns out like this:
+    my $actual  = { '(?-xism:key)' => 1 };
+
+You can also negatively assert your regular expression queries -- which wouldn't
+be possible with regular old pre-compiled ones.
+
+    my $res = $CQ->cute_query('.' => {'<nre>x</nre>' => ''});
+    # $res is { y=>7 }
+
+=item B<ATTRIBUTE QUERIES>
+
+In addition to regular expressions and XPath, CQ also supports a light version
+of the attribute selector.
 
     $CQ->parse("<r> <d a='1' b='2'/> <d a='3' b='4'/> </r>");
 
     my @a = $CQ->cute_query('/r/d/@a'=>'', '/r/d/@b'=>'', 'd/@*'=>'');
     # @a = (1,2, 1,2,3,4)
 
-CQ also supports an attribute selector that's completely illegal in real life
-XPath: C<@*>.
+Strictly speaking, XPath and XSL can already do this.  For whatever reason,
+L<XML::Twig> doesn't seem to though.
+
+CQ also supports an attribute selector that's completely illegal in XPath
+outside CQ: C<@*>.
 
     my @a = $CQ->cute_query(d=>{'@*'=>''});
     # @a = ({a=>1, b=>2}, {a=>3, b=>4})
 
-The attribute matching XPath (and non XPath) expressions are limited to
+The attribute matching expressions are limited to those expressions where the
 attributes at the tail end of the path.  (Is there another kind?)
+
+=back
 
 =head2 B<C<$the_target_data_type>>
 
