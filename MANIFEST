@@ -20,6 +20,7 @@ t/07_data_ab_grab.t
 t/08_test_simple_nostrict.t
 t/09_whitespace.t
 t/10_recurse.t
+t/11_test_re_and_nre.t
 t/critic.t
 t/pod.t
 t/pod_coverage.t
