@@ -19,11 +19,20 @@
         <note priority="medium" time="1247192239" done="1247223927">
             so I need some kind of example xml to show what I mean
         </note>
-        <note priority="medium" time="1247192254">
+        <note priority="medium" time="1247192254" done="1247517489">
             some way to handle "all the tags except this one" that's actually intuative and usable
+            <comment>
+                this is automatic using re and nre
+            </comment>
         </note>
-        <note priority="medium" time="1247192348">
+        <note priority="medium" time="1247192348" done="1247517467">
             some way to handle the ambiguity of 'blarg' =&gt; { '*' =&gt; '', something =&gt; '', something_else =&gt; '' } ... does the '*' crush the specific queries?  UNDEFINED!  It depends on the ordering of the hash keys, which is essentially random
+            <comment>
+                I don't think this is fixable in a meaningful way
+            </comment>
+        </note>
+        <note priority="medium" time="1247517513">
+            make tests for the new example2.xml
         </note>
     </note>
 </todo>
