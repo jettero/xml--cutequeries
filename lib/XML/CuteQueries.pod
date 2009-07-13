@@ -102,6 +102,8 @@ be possible with regular old pre-compiled ones.
     my $res = $CQ->cute_query('.' => {'<nre>x</nre>' => ''});
     # $res is { y=>7 }
 
+One last thing, this query format isn't XML.  You can skip the closing "tags."
+
 =item B<ATTRIBUTE QUERIES>
 
 In addition to regular expressions and XPath, CQ also supports a light version

@@ -1,4 +1,7 @@
 
+0.6000: Mon Jul 13 2009
+   - qr(.) queries nolonger work, they must now be qq(<re>.)
+
 0.5001: Wed Jul 08 2009
    - Doc bugs found by Hans Dieter Pearcey
 
