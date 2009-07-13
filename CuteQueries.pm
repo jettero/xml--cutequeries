@@ -65,17 +65,19 @@ sub _execute_query {
         if not defined $context or $context<1 or $context>2;
 
     my $rt = (defined $res_type and reftype $res_type) || '';
-    my $re = ref($query) eq "Regexp";
 
-    if( $context == KLIST ) {
-        if( $query =~ m/^\(\?[\w-]+:.+\)\z/ ) {
-            # NOTE: the key of a has can never actually be a blessed Regexp, so re-bless if we find one
+    my ($re, $nre) = (0,0);
 
-            $query = qr($query);
-            $re = 1;
+    if( my ($type, $code) = $query =~ m/^<([!Nn]?[Rr][Ee])>(.+?)(?:<\/\1>)?\z/ ) {
+        warn "type: $type; code: $code";
+        if( lc($type) eq "re" ) {
+            $re  = 1;
 
-            # NOTE: should we always do this instead of only during KLIST?
+        } else {
+            $re = $nre = 1;
         }
+
+        $query = qr($code);
     }
 
     my @c;
@@ -87,8 +89,16 @@ sub _execute_query {
         }
     }
 
+    # @c is only true when it's a root-attr query
     unless(@c) {
-        @c = eval { $re ? grep {$_->gi =~ $query } $root->children : $root->get_xpath($query) };
+        @c = eval {
+            if( $re ) {
+                return grep {$_->gi !~ $query } $root->children if $nre;
+                return grep {$_->gi =~ $query } $root->children;
+            }
+
+            return $root->get_xpath($query)
+        };
 
         $this->_query_error("while executing \"$query\": $@") if $@;
         @c = grep {$_->gi !~ m/^#/} @c unless $opts->{nofilter_nontags};
