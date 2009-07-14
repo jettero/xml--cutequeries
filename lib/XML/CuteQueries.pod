@@ -51,10 +51,10 @@ L</EXAMPLES> section first -- it probably depends on your temperament.
 
 =head2 B<C<$what_you_are_requesting>>
 
-The C<$what_you_are_requesting> is specified with either
-L<XPath|http://www.w3.org/TR/xpath> (as supported by L<XML::Twig>) or with
-regular expressions.  Matching starts at the root element, rather than the
-document.  This slightly differs from twig.
+The C<$what_you_are_requesting> is specified with either XPath
+(L<http://www.w3.org/TR/xpath>) as supported by L<XML::Twig> or with regular
+expressions.  Matching starts at the root element, rather than the document.
+This slightly differs from twig.
 
     $CQ->parse("<r><x><y>7</y></x></r>");
 
