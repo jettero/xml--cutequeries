@@ -64,6 +64,8 @@ This slightly differs from twig.
 In pure twig, C<$twig->get_xpath("x/y")> would return an empty list (since the
 document starts at C</> instead of C<< <r> >>.
 
+=over 4
+
 =item B<XPATH QUERIES>
 
 The recommended interface for most queries is XPath.  The interface is
