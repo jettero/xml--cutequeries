@@ -69,7 +69,6 @@ sub _execute_query {
     my ($re, $nre) = (0,0);
 
     if( my ($type, $code) = $query =~ m/^<([!Nn]?[Rr][Ee])>(.+?)(?:<\/\1>)?\z/ ) {
-        warn "type: $type; code: $code";
         if( lc($type) eq "re" ) {
             $re  = 1;
 
