@@ -1,3 +1,5 @@
+
+use strict;
 use Test;
 use XML::CuteQueries;
 use Data::Dumper;

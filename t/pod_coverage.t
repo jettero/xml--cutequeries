@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
-use strict;
 
+use strict;
 use Test::More;
 
 if (not $ENV{TEST_AUTHOR}) {
