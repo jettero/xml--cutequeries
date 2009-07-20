@@ -10,7 +10,7 @@ use base 'XML::Twig';
 use constant LIST   => 1;
 use constant KLIST  => 2;
 
-our $VERSION = '0.6000';
+our $VERSION = '0.6001';
 
 our %VALID_OPTS = (map {$_=>1} qw(nostrict recurse_text nofilter_nontags notrim klist));
 
