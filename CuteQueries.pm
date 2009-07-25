@@ -64,26 +64,31 @@ sub _execute_query {
     XML::CuteQueries::Error->new(text=>"\$context specification error")->throw
         if not defined $context or $context<1 or $context>2;
 
-    my $mt = 0;
-    if( $res_type ) {
-        if( $res_type =~ m/^[Xx]/ ) {
-            $mt = "x";
+    my $mt = 0; # magic restype (restype scalar sub-type)
+    my $rt = 0; # processed restype
 
-        } elsif( $res_type =~ m/^[Tt]/ ) {
-            $mt = "t";
+    if( $res_type ||= 0 ) {
+        if( reftype $res_type ) {
+            $rt = 1;
 
-        } elsif( $res_type =~ m/^[Rt]/ ) {
-            $mt = "r";
+        } else {
+            if( $res_type =~ m/^[Xx]/ ) {
+                $mt = "x";
+
+            } elsif( $res_type =~ m/^[Tt]/ ) {
+                $mt = "t";
+
+            } elsif( $res_type =~ m/^[Rt]/ ) {
+                $mt = "r";
+            }
+
+            # for xml() and twig(), $res_type would have to be slurped and then
+            # ''-ed then $rt would be false, and $mt (magic type) would be of type
+            # xml or twig
+
+            $res_type = undef;
         }
-
-        # for xml() and twig(), $res_type would have to be slurped and then
-        # ''-ed then $rt would be false, and $mt (magic type) would be of type
-        # xml or twig
-
-        $res_type = undef;
     }
-
-    my $rt = (defined $res_type and reftype $res_type) || '';
 
     my ($re, $nre) = (0,0);
 
