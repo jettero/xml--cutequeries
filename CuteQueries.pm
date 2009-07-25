@@ -69,19 +69,18 @@ sub _execute_query {
 
     if( $res_type ||= 0 ) {
         unless( $rt = reftype $res_type ) {
-            if( $res_type =~ m/^[Xx]/ ) {
+            if( $res_type =~ m/^(?:x|xml|xml\(\))\z/ ) { # xml()
                 $mt = "x";
 
-            } elsif( $res_type =~ m/^[Tt]/ ) {
+            } elsif( $res_type =~ m/^(?:t|twig|twig\(\))\z/ ) { # twig()
                 $mt = "t";
 
-            } elsif( $res_type =~ m/^[Rt]/ ) {
+            } elsif( $res_type =~ m/^(?:r|a|(?:recurse|all))(?:_text(?:\(\))?)?/ ) { # recurse_text() all_text()
                 $mt = "r";
-            }
 
-            # for xml() and twig(), $res_type would have to be slurped and then
-            # ''-ed then $rt would be false, and $mt (magic type) would be of type
-            # xml or twig
+            } else {
+                $this->_query_error("unknown scalar query sub-type: $res_type");
+            }
 
             $res_type = undef;
         }
