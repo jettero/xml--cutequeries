@@ -65,16 +65,17 @@ sub _execute_query {
         if not defined $context or $context<1 or $context>2;
 
     my $mt;
-    if( defined $res_type ) {
-        if( $res_type eq "xml()" ) {
+    if( $res_type ) {
+        if( $res_type =~ m/^[Xx]/ ) {
             $mt = "x";
 
-        } elsif( $res_type eq "twig()" ) {
+        } elsif( $res_type =~ m/^[Tt]/ ) {
             $mt = "t";
         }
 
-        # for xml() and twig(), $res_type would have to be slurped and then ''-ed
-        # then $rt would be false, and $mt (magic type) would be of type xml or twig
+        # for xml() and twig(), $res_type would have to be slurped and then
+        # ''-ed then $rt would be false, and $mt (magic type) would be of type
+        # xml or twig
 
         $res_type = undef;
     }
