@@ -65,13 +65,10 @@ sub _execute_query {
         if not defined $context or $context<1 or $context>2;
 
     my $mt = 0; # magic restype (restype scalar sub-type)
-    my $rt = 0; # processed restype
+    my $rt = 0; # processed reftype (false for scalars)
 
     if( $res_type ||= 0 ) {
-        if( reftype $res_type ) {
-            $rt = 1;
-
-        } else {
+        unless( $rt = reftype $res_type ) {
             if( $res_type =~ m/^[Xx]/ ) {
                 $mt = "x";
 
