@@ -182,13 +182,14 @@ instead.
 There are several synonyms for this:
 
     # all the same as $r2
-    my $same = $CQ->cute_query(p=>'recurse_text');
-    my $same = $CQ->cute_query(p=>'all_text()');
-    my $same = $CQ->cute_query(p=>'all_text');
-    my $same = $CQ->cute_query(p=>'recurse');
-    my $same = $CQ->cute_query(p=>'all');
-    my $same = $CQ->cute_query(p=>'r');
     my $same = $CQ->cute_query(p=>'a');
+    my $same = $CQ->cute_query(p=>'all');
+    my $same = $CQ->cute_query(p=>'all()');
+    my $same = $CQ->cute_query(p=>'all_text()');
+    my $same = $CQ->cute_query(p=>'r');
+    my $same = $CQ->cute_query(p=>'recurse');
+    my $same = $CQ->cute_query(p=>'recurse()');
+    my $same = $CQ->cute_query(p=>'recurse_text()');
 
 =item B<xml()>
 
