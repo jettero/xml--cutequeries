@@ -155,11 +155,13 @@ sub _execute_query {
         }
 
         if( $context == KLIST ) {
+            return map { $_->gi => $_ } @c if $mt eq "t";
             return $_trimhash->( map { $_->gi => $_->xml_string } @c ) if $mt eq "x";
             return $_trimhash->( map { $_->gi => $_->text       } @c ) if $mt eq "r";
             return $_trimhash->( map { $_->gi => $_->text_only  } @c );
         }
 
+        return @c if $mt eq "t";
         return $_trimlist->( map { $_->xml_string } @c ) if $mt eq "x";
         return $_trimlist->( map { $_->text       } @c ) if $mt eq "r";
         return $_trimlist->( map { $_->text_only  } @c );
