@@ -167,8 +167,8 @@ several scalar sub-types.
 =item B<recurse_text()>
 
 By default, CQ will only return the text from the matched node when requesting
-scalar-type results.  If you'd like to return all the text, use this query
-instead.
+scalar-type results.  If you'd like to return all the text, use this scalar
+query sub-type instead.
 
     my $CQ = XML::CuteQueries
      ->new->parse("<r><p>Slow <em>down</em> there dude.</p></r>");
@@ -193,8 +193,8 @@ There are several synonyms for this:
 
 =item B<xml()>
 
-You can also choose to slurp out XML or xhtml using the C<'xml()'en requesting
-C<''> results.  If you'd like to return all the text, use this query instead.
+You can also choose to slurp out XML or xhtml using the C<'xml()'> scalar-query
+sub-type.
 
     my $CQ = XML::CuteQueries
      ->new->parse("<r><p>Slow <em>down</em> there dude.</p></r>");
@@ -214,7 +214,7 @@ There are several synonyms for this:
 
 =item B<twig()>
 
-Lastly, if you want to do some twig powerful things, you can ask for the twig
+Lastly, if you want to do some twigly powerful things, you can ask for the twig
 elements directly:
 
     my $CQ = XML::CuteQueries
@@ -225,12 +225,20 @@ elements directly:
     print $x->gi, " is ", $x->xml_string, "\n";
     print $y->gi, " is ", $y->xml_string, "\n";
 
+Another example:
+
+    my @b = $CQ->cute_query('*'=>'t');
+    $_->set_tag('h1') for @b;
+    $CQ->root->set_tag("html");
+    print $CQ->root->sprint, "\n";
+    # prints this: <html><h1>1</h1><h1>2</h1></html>
+
 There are several synonyms for this:
 
     # all the same as ($x,$y)
-    my @same = $CQ->cute_query(p=>'t');
-    my @same = $CQ->cute_query(p=>'twig');
-    my @same = $CQ->cute_query(p=>'twig()');
+    my @same = $CQ->cute_query('*'=>'t');
+    my @same = $CQ->cute_query('*'=>'twig');
+    my @same = $CQ->cute_query('*'=>'twig()');
 
 =back
 
