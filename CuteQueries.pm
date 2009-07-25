@@ -160,7 +160,7 @@ sub _execute_query {
             return $_trimhash->( map { $_->gi => $_->text_only  } @c );
         }
 
-        return $_trimhash->( map { $_->xml_string } @c ) if $mt eq "x";
+        return $_trimlist->( map { $_->xml_string } @c ) if $mt eq "x";
         return $_trimlist->( map { $_->text       } @c ) if $mt eq "r";
         return $_trimlist->( map { $_->text_only  } @c );
 

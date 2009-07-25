@@ -159,6 +159,58 @@ L</OPTIONS> for the full story on options.
     # return the first match, presuming there may be more than
     # one <field_name>
 
+At the risk of making something simple into something complicated, there are
+several scalar sub-types.
+
+=over 4
+
+=item B<recurse_text()>
+
+By default, CQ will only return the text from the matched node when requesting
+scalar-type results.  If you'd like to return all the text, use this query
+instead.
+
+    my $CQ = XML::CuteQueries
+     ->new->parse("<r><p>Slow <em>down</em> there dude.</p></r>");
+
+    my $r1 = $CQ->cute_query(p=>'');
+    # Slow  there dude.
+
+    my $r2 = $CQ->cute_query(p=>'recurse_text()');
+    # Slow down there dude.
+
+There are several synonyms for this:
+
+    # all the same as $r2
+    my $same = $CQ->cute_query(p=>'recurse_text');
+    my $same = $CQ->cute_query(p=>'all_text()');
+    my $same = $CQ->cute_query(p=>'all_text');
+    my $same = $CQ->cute_query(p=>'recurse');
+    my $same = $CQ->cute_query(p=>'all');
+    my $same = $CQ->cute_query(p=>'r');
+    my $same = $CQ->cute_query(p=>'a');
+
+=item B<xml()>
+
+You can also choose to slurp out XML or xhtml using the C<'xml()'en requesting
+C<''> results.  If you'd like to return all the text, use this query instead.
+
+    my $CQ = XML::CuteQueries
+     ->new->parse("<r><p>Slow <em>down</em> there dude.</p></r>");
+
+    my $r1 = $CQ->cute_query(p=>'');
+    # Slow  there dude.
+
+    my $r2 = $CQ->cute_query(p=>'xml()');
+    # Slow <em>down</em> there dude.
+
+There are several synonyms for this:
+
+    # all the same as $r2
+    my $same = $CQ->cute_query(p=>'recurse_text');
+
+=back
+
 =item B<C<[]>>
 
 The result shape of C<[]> indicates that what you're requesting should point to
@@ -386,24 +438,6 @@ than just the values.
     # match all top level tags and return tag-name/value pairs
 
 This can alternately be invoked by calling L</hash_query()>.
-
-=item B<recurse_text>
-
-By default, CQ will only return the text from the matched node when requesting
-C<''> results.  If you'd like to return all the text, use this option.
-
-    my $CQ = XML::CuteQueries
-     ->new->parse("<r><p>Slow <em>down</em> there dude.</p></r>");
-
-    my $r1 = $CQ->cute_query(p=>'');
-    # Slow  there dude.
-
-    my $r2 = $CQ->cute_query({recurse_text=>1}, p=>'');
-    # Slow down there dude.
-
-Note that CQ doesn't currently support slurping XML (or HTML) from the source
-document.  There are no plans for this either.  If you need it, enter a wishlist
-item on RT.
 
 =item B<notrim>
 
