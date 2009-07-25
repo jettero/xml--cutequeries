@@ -75,7 +75,7 @@ sub _execute_query {
             } elsif( $res_type =~ m/^(?:t|twig|twig\(\))\z/ ) { # twig()
                 $mt = "t";
 
-            } elsif( $res_type =~ m/^(?:r|a|(?:recurse|all))(?:_text(?:\(\))?)?/ ) { # recurse_text() all_text()
+            } elsif( $res_type =~ m/^(?:r|a|recurse|all)(?:_text(?:\(\))?)?/ ) { # recurse_text() all_text()
                 $mt = "r";
 
             } else {
