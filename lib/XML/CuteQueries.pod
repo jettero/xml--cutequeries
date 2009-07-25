@@ -207,7 +207,9 @@ C<''> results.  If you'd like to return all the text, use this query instead.
 There are several synonyms for this:
 
     # all the same as $r2
-    my $same = $CQ->cute_query(p=>'recurse_text');
+    my $same = $CQ->cute_query(p=>'x');
+    my $same = $CQ->cute_query(p=>'xml');
+    my $same = $CQ->cute_query(p=>'xml()');
 
 =back
 
