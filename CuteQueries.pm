@@ -114,7 +114,7 @@ sub _execute_query {
 
     } else {
         $_trimlist = sub { for(@_) { unless( m/\n/ ) { s/^\s+//; s/\s+$// }}; @_ };
-        $_trimhash = sub { my %h=@_; for(values %h) { unless( m/\n/ ) { s/^\s+//; s/\s+$// }}; %h };
+        $_trimhash = sub { my %h=@_; for(grep {defined $_} values %h) { unless( m/\n/ ) { s/^\s+//; s/\s+$// }}; %h };
     }
 
     if( not $rt ) {
