@@ -12,7 +12,7 @@ use constant KLIST  => 2;
 
 our $VERSION = '0.6001';
 
-our %VALID_OPTS = (map {$_=>1} qw(nostrict recurse_text nofilter_nontags notrim klist));
+our %VALID_OPTS = (map {$_=>1} qw(nostrict nofilter_nontags notrim klist));
 
 # _data_error {{{
 sub _data_error {
@@ -64,13 +64,16 @@ sub _execute_query {
     XML::CuteQueries::Error->new(text=>"\$context specification error")->throw
         if not defined $context or $context<1 or $context>2;
 
-    my $mt;
+    my $mt = 0;
     if( $res_type ) {
         if( $res_type =~ m/^[Xx]/ ) {
             $mt = "x";
 
         } elsif( $res_type =~ m/^[Tt]/ ) {
             $mt = "t";
+
+        } elsif( $res_type =~ m/^[Rt]/ ) {
+            $mt = "r";
         }
 
         # for xml() and twig(), $res_type would have to be slurped and then
@@ -151,12 +154,14 @@ sub _execute_query {
         }
 
         if( $context == KLIST ) {
-            return $_trimhash->( map { $_->gi => $_->text      } @c ) if $opts->{recurse_text};
-            return $_trimhash->( map { $_->gi => $_->text_only } @c );
+            return $_trimhash->( map { $_->gi => $_->xml_string } @c ) if $mt eq "x";
+            return $_trimhash->( map { $_->gi => $_->text       } @c ) if $mt eq "r";
+            return $_trimhash->( map { $_->gi => $_->text_only  } @c );
         }
 
-        return $_trimlist->( map { $_->text      } @c ) if $opts->{recurse_text};
-        return $_trimlist->( map { $_->text_only } @c );
+        return $_trimhash->( map { $_->xml_string } @c ) if $mt eq "x";
+        return $_trimlist->( map { $_->text       } @c ) if $mt eq "r";
+        return $_trimlist->( map { $_->text_only  } @c );
 
     } elsif( $rt eq "HASH" ) {
         if( $context == KLIST ) {
