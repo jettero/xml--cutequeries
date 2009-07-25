@@ -64,6 +64,21 @@ sub _execute_query {
     XML::CuteQueries::Error->new(text=>"\$context specification error")->throw
         if not defined $context or $context<1 or $context>2;
 
+    my $mt;
+    if( defined $res_type ) {
+        if( $res_type eq "xml()" ) {
+            $mt = "x";
+
+        } elsif( $res_type eq "twig()" ) {
+            $mt = "t";
+        }
+
+        # for xml() and twig(), $res_type would have to be slurped and then ''-ed
+        # then $rt would be false, and $mt (magic type) would be of type xml or twig
+
+        $res_type = undef;
+    }
+
     my $rt = (defined $res_type and reftype $res_type) || '';
 
     my ($re, $nre) = (0,0);
