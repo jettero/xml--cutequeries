@@ -212,6 +212,26 @@ There are several synonyms for this:
     my $same = $CQ->cute_query(p=>'xml');
     my $same = $CQ->cute_query(p=>'xml()');
 
+=item B<twig()>
+
+Lastly, if you want to do some twig powerful things, you can ask for the twig
+elements directly:
+
+    my $CQ = XML::CuteQueries
+     ->new->parse("<r><x>1</x><y>2</y></r>");
+
+    # Print x is 1 and y is 2.
+    my ($x, $y) = $CQ->cute_query('*'=>'twig()');
+    print $x->gi, " is ", $x->xml_string, "\n";
+    print $y->gi, " is ", $y->xml_string, "\n";
+
+There are several synonyms for this:
+
+    # all the same as ($x,$y)
+    my @same = $CQ->cute_query(p=>'t');
+    my @same = $CQ->cute_query(p=>'twig');
+    my @same = $CQ->cute_query(p=>'twig()');
+
 =back
 
 =item B<C<[]>>
