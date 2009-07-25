@@ -8,6 +8,7 @@ Makefile.PL
 README
 example.xml
 example2.xml
+example3.xml
 lib/XML/CuteQueries.pod
 lib/XML/CuteQueries/Error.pod
 t/01_load.t
@@ -22,6 +23,9 @@ t/09_whitespace.t
 t/10_recurse.t
 t/11_test_re_and_nre.t
 t/12_test_example2.t
+t/15_longer_xml.t
+t/15_trivial_xml.t
+t/17_trivial_twig.t
 t/critic.t
 t/pod.t
 t/pod_coverage.t

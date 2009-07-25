@@ -1,4 +1,10 @@
 
+0.6501: Sat Jul 25 2009
+   - added scalar query sub-types: xml() twig() recurse_text()
+   - removed the recurse_text=>1 option -- affects entire query,
+     should be per match
+   - fixed a few uninitialized values warnings for nostrict=>1 queries.
+
 0.6001: Mon Jul 20 2009
    - forgot a dependency
 
