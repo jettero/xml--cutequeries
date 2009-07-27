@@ -3,6 +3,9 @@ package XML::CuteQueries;
 
 use strict;
 use warnings;
+
+our $VERSION = '0.6600';
+
 use Scalar::Util qw(reftype blessed);
 use XML::CuteQueries::Error;
 use base 'XML::Twig';
@@ -10,9 +13,11 @@ use base 'XML::Twig';
 use constant LIST   => 1;
 use constant KLIST  => 2;
 
-our $VERSION = '0.6600';
+use Exporter;
+our @EXPORT_OK = qw(CQ);
+sub CQ() { our $CQ ||= __PACKAGE__->new; }
 
-our %VALID_OPTS = (map {$_=>1} qw(nostrict nofilter_nontags notrim klist));
+our %VALID_OPTS = (map {$_=>1} qw(nostrict nostrict_match nostrict_single nofilter_nontags notrim klist));
 
 # _data_error {{{
 sub _data_error {
@@ -86,8 +91,17 @@ sub _execute_query {
         }
     }
 
-    my ($re, $nre) = (0,0);
+    my $kar = 0; # klist keys are expected more than once
+    if( $query =~ s/^\[\]// ) {
+        # NOTE: I don't think this is ever valid XPath
+        $kar = 1;
 
+        $this->_query_error("[] queries (\"[]$query\") do not make sense outside of klist contexts") unless $context == KLIST;
+        $this->_query_error("[]@ queries (\"[]$query\")are unsupported because <x a='1' a='1'/> isn't valid anyway")
+            if $query =~ m/^[@]/;
+    }
+
+    my ($re, $nre) = (0,0);
     if( my ($type, $code) = $query =~ m/^<([!Nn]?[Rr][Ee])>(.+?)(?:<\/\1>)?\z/ ) {
         if( lc($type) eq "re" ) {
             $re  = 1;
@@ -123,21 +137,22 @@ sub _execute_query {
         @c = grep {$_->gi !~ m/^#/} @c unless $opts->{nofilter_nontags};
     }
 
-    $this->_data_error($rt, "match failed for \"$query\"") unless @c or $opts->{nostrict};
+    $this->_data_error($rt, "match failed for \"$query\"") unless @c or $opts->{nostrict_match};
     return unless @c;
 
-    my $_trimlist;
-    my $_trimhash;
-
-    if( $opts->{notrim} ) {
-        $_trimlist = $_trimhash = sub {@_};
-
-    } else {
-        $_trimlist = sub { for(@_) { unless( m/\n/ ) { s/^\s+//; s/\s+$// }}; @_ };
-        $_trimhash = sub { my %h=@_; for(grep {defined $_} values %h) { unless( m/\n/ ) { s/^\s+//; s/\s+$// }}; %h };
-    }
 
     if( not $rt ) {
+        my $_trimlist;
+        my $_trimhash;
+
+        if( $opts->{notrim} ) {
+            $_trimlist = $_trimhash = sub {@_};
+
+        } else {
+            $_trimlist = sub { for(@_) { unless( m/\n/ ) { s/^\s+//; s/\s+$// }}; @_ };
+            $_trimhash = sub { my %h=@_; for(grep {defined $_} values %h) { unless( m/\n/ ) { s/^\s+//; s/\s+$// }}; %h };
+        }
+
         if( $attr_query ) {
             if( $attr_query eq "*" ) {
                 if( $context == KLIST ) {
@@ -155,10 +170,37 @@ sub _execute_query {
         }
 
         if( $context == KLIST ) {
-            return map { $_->gi => $_ } @c if $mt eq "t";
-            return $_trimhash->( map { $_->gi => $_->xml_string } @c ) if $mt eq "x";
-            return $_trimhash->( map { $_->gi => $_->text       } @c ) if $mt eq "r";
-            return $_trimhash->( map { $_->gi => $_->text_only  } @c );
+            if( $kar ) {
+                my %h;
+
+                   if( $mt eq "t" ) { push @{$h{$_->gi}}, $_             for @c }
+                elsif( $mt eq "x" ) { push @{$h{$_->gi}}, $_->xml_string for @c }
+                elsif( $mt eq "r" ) { push @{$h{$_->gi}}, $_->text       for @c }
+                else                { push @{$h{$_->gi}}, $_->text_only  for @c }
+
+                return %h;
+
+            } elsif( $opts->{nostrict_single} ) {
+                return map { $_->gi => $_ } @c if $mt eq "t";
+                return $_trimhash->( map { $_->gi => $_->xml_string } @c ) if $mt eq "x";
+                return $_trimhash->( map { $_->gi => $_->text       } @c ) if $mt eq "r";
+                return $_trimhash->( map { $_->gi => $_->text_only  } @c );
+
+            } else {
+                my %check;
+                my $mygi = sub {
+                    my $g = $_[0]->gi;
+
+                    $this->_data_error($rt, "expected exactly one match-per-tagname for \"$query\", got more")
+                        if $check{$g}++;
+
+                    $g;
+                };
+                return map { $_->$mygi => $_ } @c if $mt eq "t";
+                return $_trimhash->( map { $_->$mygi => $_->xml_string } @c ) if $mt eq "x";
+                return $_trimhash->( map { $_->$mygi => $_->text       } @c ) if $mt eq "r";
+                return $_trimhash->( map { $_->$mygi => $_->text_only  } @c );
+            }
         }
 
         return @c if $mt eq "t";
@@ -168,15 +210,41 @@ sub _execute_query {
 
     } elsif( $rt eq "HASH" ) {
         if( $context == KLIST ) {
-            return map {
-                my $c = $_;
-                $_->gi => {map { $this->_execute_query($c, $opts, $_ => $res_type->{$_}, KLIST) } keys %$res_type}
-            } @c;
+            if( $kar ) {
+                my %h;
+
+                for my $c (@c) {
+                    push @{$h{$c->gi}},
+                        {map { $this->_execute_query($c, $opts, $_ => $res_type->{$_}, KLIST) } keys %$res_type}
+                }
+
+                return %h;
+
+            } elsif( $opts->{nostrict_single} ) {
+                return map {
+                    my $c = $_;
+                    $c->gi => {map { $this->_execute_query($c, $opts, $_ => $res_type->{$_}, KLIST) } keys %$res_type}
+
+                } @c;
+
+            } else {
+                my %check;
+                return map {
+                    my $c = $_;
+                    my $g = $_->gi;
+
+                    $this->_data_error($rt, "expected exactly one match-per-tagname for \"$query\", got more")
+                        if $check{$g}++;
+
+                    $g => {map { $this->_execute_query($c, $opts, $_ => $res_type->{$_}, KLIST) } keys %$res_type}
+
+                } @c;
+            }
         }
 
         return map {
             my $c = $_;
-            scalar # I don't think I should need this word here, but I clearly do
+            scalar # I don't think I should need this word here, but I clearly do, plus would also work
             {map {$this->_execute_query($c, $opts, $_ => $res_type->{$_}, KLIST)} keys %$res_type};
         } @c;
 
@@ -187,7 +255,32 @@ sub _execute_query {
         }
 
         if( $context == KLIST ) {
-            return map {my $c = $_; $c->gi => [ map {$this->_execute_query($c, $opts, @$_, LIST)} @p ] } @c;
+            if( $kar ) {
+                my %h;
+
+                for my $c (@c) {
+                    push @{$h{$c->gi}},
+                        [ map {$this->_execute_query($c, $opts, @$_, LIST)} @p ]
+                }
+
+                return %h;
+
+            } elsif( $opts->{nostrict_single} ) {
+                return map {
+                    my $c = $_;
+                    $c->gi => [ map {$this->_execute_query($c, $opts, @$_, LIST)} @p ] } @c;
+
+            } else {
+                my %check;
+                return map {
+                    my $c = $_;
+                    my $g = $c->gi;
+
+                    $this->_data_error($rt, "expected exactly one match-per-tagname for \"$query\", got more")
+                        if $check{$g}++;
+
+                    $g => [ map {$this->_execute_query($c, $opts, @$_, LIST)} @p ] } @c;
+            }
         }
 
         return map { my $c = $_; [ map {$this->_execute_query($c, $opts, @$_, LIST)} @p ] } @c;
@@ -203,6 +296,8 @@ sub cute_query {
     my $this = shift;
     my $opts = {};
        $opts = shift if ref $_[0] eq "HASH";
+
+    $opts->{nostrict_match} = $opts->{nostrict_single} = $opts->{nostrict} if exists $opts->{nostrict};
 
     for(keys %$opts) {
         $this->_query_error("no such query option \"$_\"") unless $VALID_OPTS{$_};
@@ -222,9 +317,17 @@ sub cute_query {
 
     unless( wantarray ) {
 
-        unless( $opts->{nostrict} or @result==1 ) {
-            my $rt = (defined $res_type and reftype $res_type) || '';
-            $this->_data_error($rt, "expected exactly one match for \"$query\", got " . @result)
+        if( @result>1 ) {
+            unless( $opts->{nostrict_single} ) {
+                my $rt = (defined $res_type and reftype $res_type) || '';
+                $this->_data_error($rt, "expected exactly one match for \"$query\", got " . @result)
+            }
+
+        } elsif( @result<1 ) {
+            unless( $opts->{nostrict_match} ) {
+                my $rt = (defined $res_type and reftype $res_type) || '';
+                $this->_data_error($rt, "expected exactly one match for \"$query\", got " . @result)
+            }
         }
 
         return $result[0]; # we never want the size of the array, preferring the first match
