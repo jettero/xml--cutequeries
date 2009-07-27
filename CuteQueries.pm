@@ -170,7 +170,14 @@ sub _execute_query {
 
         if( $context == KLIST ) {
             if( $kar ) {
-                die "TODO['']";
+                my %h;
+
+                   if( $mt eq "t" ) { push @{$h{$_->gi}}, $_             for @c }
+                elsif( $mt eq "x" ) { push @{$h{$_->gi}}, $_->xml_string for @c }
+                elsif( $mt eq "r" ) { push @{$h{$_->gi}}, $_->text       for @c }
+                else                { push @{$h{$_->gi}}, $_->text_only  for @c }
+
+                return %h;
 
             } elsif( $opts->{nostrict_single} ) {
                 return map { $_->gi => $_ } @c if $mt eq "t";
