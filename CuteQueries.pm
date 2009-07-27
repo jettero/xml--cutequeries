@@ -138,18 +138,19 @@ sub _execute_query {
     $this->_data_error($rt, "match failed for \"$query\"") unless @c or $opts->{nostrict_match};
     return unless @c;
 
-    my $_trimlist;
-    my $_trimhash;
-
-    if( $opts->{notrim} ) {
-        $_trimlist = $_trimhash = sub {@_};
-
-    } else {
-        $_trimlist = sub { for(@_) { unless( m/\n/ ) { s/^\s+//; s/\s+$// }}; @_ };
-        $_trimhash = sub { my %h=@_; for(grep {defined $_} values %h) { unless( m/\n/ ) { s/^\s+//; s/\s+$// }}; %h };
-    }
 
     if( not $rt ) {
+        my $_trimlist;
+        my $_trimhash;
+
+        if( $opts->{notrim} ) {
+            $_trimlist = $_trimhash = sub {@_};
+
+        } else {
+            $_trimlist = sub { for(@_) { unless( m/\n/ ) { s/^\s+//; s/\s+$// }}; @_ };
+            $_trimhash = sub { my %h=@_; for(grep {defined $_} values %h) { unless( m/\n/ ) { s/^\s+//; s/\s+$// }}; %h };
+        }
+
         if( $attr_query ) {
             if( $attr_query eq "*" ) {
                 if( $context == KLIST ) {
