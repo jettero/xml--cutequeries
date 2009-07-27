@@ -94,6 +94,8 @@ sub _execute_query {
     if( $query =~ s/^\[\]// ) {
         # NOTE: I don't think this is ever valid XPath
         $kar = 1;
+
+        $this->_query_error("[] queries (\"[]$query\") do not make sense outside of klist contexts") unless $context == KLIST;
     }
 
     my ($re, $nre) = (0,0);
