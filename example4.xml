@@ -18,6 +18,9 @@
 
     I think this is clearest
     2) $CQ->parsefile("example4.xml")->cute_query(m=>{'[]ten'=>'', '[]fifteen'=>})
+
+    extra points for handling both m's too
+    $CQ->parsefile("example4.xml")->cute_query('.'=>{'[]m'=>{'[]ten'=>'', '[]fifteen'=>}})
 -->
 
 <r>
@@ -44,5 +47,12 @@
         <fifteen>reincarnation's</fifteen>
         <fifteen>dispossession's</fifteen>
 
+    </m>
+    <m>
+        <seven>Sukkoth</seven>
+        <seven>Almohad</seven>
+        <seven>cheeked</seven>
+        <seven>dogmata</seven>
+        <seven>happily</seven>
     </m>
 </r>
