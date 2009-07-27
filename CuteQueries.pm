@@ -169,7 +169,10 @@ sub _execute_query {
         }
 
         if( $context == KLIST ) {
-            if( $opts->{nostrict_single} ) {
+            if( $kar ) {
+                die "TODO['']";
+
+            } elsif( $opts->{nostrict_single} ) {
                 return map { $_->gi => $_ } @c if $mt eq "t";
                 return $_trimhash->( map { $_->gi => $_->xml_string } @c ) if $mt eq "x";
                 return $_trimhash->( map { $_->gi => $_->text       } @c ) if $mt eq "r";
@@ -199,7 +202,10 @@ sub _execute_query {
 
     } elsif( $rt eq "HASH" ) {
         if( $context == KLIST ) {
-            if( $opts->{nostrict_single} ) {
+            if( $kar ) {
+                die "TODO[HA]";
+
+            } elsif( $opts->{nostrict_single} ) {
                 return map {
                     my $c = $_;
                     $c->gi => {map { $this->_execute_query($c, $opts, $_ => $res_type->{$_}, KLIST) } keys %$res_type}
@@ -234,7 +240,10 @@ sub _execute_query {
         }
 
         if( $context == KLIST ) {
-            if( $opts->{nostrict_single} ) {
+            if( $kar ) {
+                die "TODO[AR]";
+
+            } elsif( $opts->{nostrict_single} ) {
                 return map {
                     my $c = $_;
                     $c->gi => [ map {$this->_execute_query($c, $opts, @$_, LIST)} @p ] } @c;
