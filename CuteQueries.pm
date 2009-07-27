@@ -96,10 +96,11 @@ sub _execute_query {
         $kar = 1;
 
         $this->_query_error("[] queries (\"[]$query\") do not make sense outside of klist contexts") unless $context == KLIST;
+        $this->_query_error("[]@ queries (\"[]$query\")are unsupported because <x a='1' a='1'/> isn't valid anyway")
+            if $query =~ m/^[@]//;
     }
 
     my ($re, $nre) = (0,0);
-
     if( my ($type, $code) = $query =~ m/^<([!Nn]?[Rr][Ee])>(.+?)(?:<\/\1>)?\z/ ) {
         if( lc($type) eq "re" ) {
             $re  = 1;
