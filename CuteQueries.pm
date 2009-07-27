@@ -199,15 +199,31 @@ sub _execute_query {
 
     } elsif( $rt eq "HASH" ) {
         if( $context == KLIST ) {
-            return map {
-                my $c = $_;
-                $_->gi => {map { $this->_execute_query($c, $opts, $_ => $res_type->{$_}, KLIST) } keys %$res_type}
-            } @c;
+            if( $opts->{nostrict_single} ) {
+                return map {
+                    my $c = $_;
+                    $c->gi => {map { $this->_execute_query($c, $opts, $_ => $res_type->{$_}, KLIST) } keys %$res_type}
+
+                } @c;
+
+            } else {
+                my %check;
+                return map {
+                    my $c = $_;
+                    my $g = $_->gi;
+
+                    $this->_data_error($rt, "expected exactly one match-per-tagname for \"$query\", got more")
+                        if $check{$g}++;
+
+                    $g => {map { $this->_execute_query($c, $opts, $_ => $res_type->{$_}, KLIST) } keys %$res_type}
+
+                } @c;
+            }
         }
 
         return map {
             my $c = $_;
-            scalar # I don't think I should need this word here, but I clearly do
+            scalar # I don't think I should need this word here, but I clearly do, plus would also work
             {map {$this->_execute_query($c, $opts, $_ => $res_type->{$_}, KLIST)} keys %$res_type};
         } @c;
 
@@ -218,7 +234,22 @@ sub _execute_query {
         }
 
         if( $context == KLIST ) {
-            return map {my $c = $_; $c->gi => [ map {$this->_execute_query($c, $opts, @$_, LIST)} @p ] } @c;
+            if( $opts->{nostrict_single} ) {
+                return map {
+                    my $c = $_;
+                    $c->gi => [ map {$this->_execute_query($c, $opts, @$_, LIST)} @p ] } @c;
+
+            } else {
+                my %check;
+                return map {
+                    my $c = $_;
+                    my $g = $c->gi;
+
+                    $this->_data_error($rt, "expected exactly one match-per-tagname for \"$query\", got more")
+                        if $check{$g}++;
+
+                    $g => [ map {$this->_execute_query($c, $opts, @$_, LIST)} @p ] } @c;
+            }
         }
 
         return map { my $c = $_; [ map {$this->_execute_query($c, $opts, @$_, LIST)} @p ] } @c;

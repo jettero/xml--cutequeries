@@ -5,7 +5,7 @@ use XML::CuteQueries;
 
 my $CQ = XML::CuteQueries->new->parse("<r><x><y>7</y><a>7</a><a>8</a></x></r>");
 
-plan tests => 12;
+plan tests => 16;
 
 ok( $CQ->cute_query('x/y' => ''), 7 );
 ok( eval{$CQ->cute_query('x/z' => '')}, undef ) and ok($@, qr(match failed));
@@ -20,6 +20,11 @@ $Data::Dumper::Sortkeys = 1;
 $Data::Dumper::Indent   = 0;
 my $exemplar = Dumper({y=>'7', a=>'8'});
 
-ok( eval{$CQ->cute_query(x=>{'*'=>''})}, undef ) and ok($@, qr(single-value));
+ok( eval{$CQ->cute_query(x=>{'*'=>''})}, undef ) and ok($@, qr(match-per-tagname));
 ok( Dumper($CQ->cute_query({nostrict_single=>1}, x=>{'*'=>''})), $exemplar );
 ok( Dumper($CQ->cute_query({nostrict=>1}, x=>{'*'=>''})), $exemplar );
+
+$CQ->parse("<r><x><a>1</a></x><x><a>2</a></x></r>");
+ok( eval{$CQ->hash_query(x=>'')}, undef ) and ok($@, qr(match-per-tagname));
+ok( eval{$CQ->cute_query('.'=>{x=>''})}, undef ) and ok($@, qr(match-per-tagname));
+
