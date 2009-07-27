@@ -10,9 +10,9 @@ use base 'XML::Twig';
 use constant LIST   => 1;
 use constant KLIST  => 2;
 
-our $VERSION = '0.5000';
+our $VERSION = '0.6501';
 
-our %VALID_OPTS = (map {$_=>1} qw(nostrict recurse_text nofilter_nontags notrim klist));
+our %VALID_OPTS = (map {$_=>1} qw(nostrict nofilter_nontags notrim klist));
 
 # _data_error {{{
 sub _data_error {
@@ -64,18 +64,39 @@ sub _execute_query {
     XML::CuteQueries::Error->new(text=>"\$context specification error")->throw
         if not defined $context or $context<1 or $context>2;
 
-    my $rt = (defined $res_type and reftype $res_type) || '';
-    my $re = ref($query) eq "Regexp";
+    my $mt = 0; # magic restype (restype scalar sub-type)
+    my $rt = 0; # processed reftype (false for scalars)
 
-    if( $context == KLIST ) {
-        if( $query =~ m/^\(\?[\w-]+:.+\)\z/ ) {
-            # NOTE: the key of a has can never actually be a blessed Regexp, so re-bless if we find one
+    if( $res_type ||= 0 ) {
+        unless( $rt = reftype $res_type ) {
+            if( $res_type =~ m/^(?:x|xml|xml\(\))\z/ ) { # xml()
+                $mt = "x";
 
-            $query = qr($query);
-            $re = 1;
+            } elsif( $res_type =~ m/^(?:t|twig|twig\(\))\z/ ) { # twig()
+                $mt = "t";
 
-            # NOTE: should we always do this instead of only during KLIST?
+            } elsif( $res_type =~ m/^(?:r|a|recurse|all)(?:_text(?:\(\))?)?/ ) { # recurse_text() all_text()
+                $mt = "r";
+
+            } else {
+                $this->_query_error("unknown scalar query sub-type: $res_type");
+            }
+
+            $res_type = undef;
         }
+    }
+
+    my ($re, $nre) = (0,0);
+
+    if( my ($type, $code) = $query =~ m/^<([!Nn]?[Rr][Ee])>(.+?)(?:<\/\1>)?\z/ ) {
+        if( lc($type) eq "re" ) {
+            $re  = 1;
+
+        } else {
+            $re = $nre = 1;
+        }
+
+        $query = qr($code);
     }
 
     my @c;
@@ -87,8 +108,16 @@ sub _execute_query {
         }
     }
 
+    # @c is only true when it's a root-attr query
     unless(@c) {
-        @c = eval { $re ? grep {$_->gi =~ $query } $root->children : $root->get_xpath($query) };
+        @c = eval {
+            if( $re ) {
+                return grep {$_->gi !~ $query } $root->children if $nre;
+                return grep {$_->gi =~ $query } $root->children;
+            }
+
+            return $root->get_xpath($query)
+        };
 
         $this->_query_error("while executing \"$query\": $@") if $@;
         @c = grep {$_->gi !~ m/^#/} @c unless $opts->{nofilter_nontags};
@@ -105,7 +134,7 @@ sub _execute_query {
 
     } else {
         $_trimlist = sub { for(@_) { unless( m/\n/ ) { s/^\s+//; s/\s+$// }}; @_ };
-        $_trimhash = sub { my %h=@_; for(values %h) { unless( m/\n/ ) { s/^\s+//; s/\s+$// }}; %h };
+        $_trimhash = sub { my %h=@_; for(grep {defined $_} values %h) { unless( m/\n/ ) { s/^\s+//; s/\s+$// }}; %h };
     }
 
     if( not $rt ) {
@@ -126,12 +155,16 @@ sub _execute_query {
         }
 
         if( $context == KLIST ) {
-            return $_trimhash->( map { $_->gi => $_->text      } @c ) if $opts->{recurse_text};
-            return $_trimhash->( map { $_->gi => $_->text_only } @c );
+            return map { $_->gi => $_ } @c if $mt eq "t";
+            return $_trimhash->( map { $_->gi => $_->xml_string } @c ) if $mt eq "x";
+            return $_trimhash->( map { $_->gi => $_->text       } @c ) if $mt eq "r";
+            return $_trimhash->( map { $_->gi => $_->text_only  } @c );
         }
 
-        return $_trimlist->( map { $_->text      } @c ) if $opts->{recurse_text};
-        return $_trimlist->( map { $_->text_only } @c );
+        return @c if $mt eq "t";
+        return $_trimlist->( map { $_->xml_string } @c ) if $mt eq "x";
+        return $_trimlist->( map { $_->text       } @c ) if $mt eq "r";
+        return $_trimlist->( map { $_->text_only  } @c );
 
     } elsif( $rt eq "HASH" ) {
         if( $context == KLIST ) {

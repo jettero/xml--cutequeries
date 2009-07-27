@@ -1,4 +1,20 @@
 
+0.6501: Sat Jul 25 2009
+   - added scalar query sub-types: xml() twig() recurse_text()
+   - removed the recurse_text=>1 option -- affects entire query,
+     should be per match
+   - fixed a few uninitialized values warnings for nostrict=>1 queries.
+
+0.6001: Mon Jul 20 2009
+   - forgot a dependency
+
+0.6000: Mon Jul 13 2009
+   - qr(.) queries nolonger work, they must now be qq(<re>.)
+   - added a bunch of tests using the new qq(<re>) and qq(<nre>)
+
+0.5001: Wed Jul 08 2009
+   - Doc bugs found by Hans Dieter Pearcey
+
 0.5000: Mon Jul 06 2009
    - Brainstorming
    - "just brainstorming" is no reason to not include a bunch of

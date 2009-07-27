@@ -10,7 +10,8 @@ WriteMakefile(
     'VERSION_FROM'  => 'CuteQueries.pm',
 
     'PREREQ_PM'     => { 
-        'XML::Twig' => 0,
+        'XML::Twig'       => 0, # for CQ
+        'Class::Accessor' => 0, # for CQ:E
     },
 
     ($ExtUtils::MakeMaker::VERSION ge '6.48'? 

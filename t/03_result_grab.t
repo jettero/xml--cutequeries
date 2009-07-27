@@ -1,4 +1,5 @@
 
+use strict;
 use Test;
 use XML::CuteQueries;
 
