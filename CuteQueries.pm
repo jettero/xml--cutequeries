@@ -10,6 +10,10 @@ use base 'XML::Twig';
 use constant LIST   => 1;
 use constant KLIST  => 2;
 
+use Exporter;
+our @EXPORT_OK = qw(CQ);
+sub CQ() { our $CQ ||= __PACKAGE__->new; }
+
 our $VERSION = '0.6502';
 
 our %VALID_OPTS = (map {$_=>1} qw(nostrict nostrict_match nostrict_single nofilter_nontags notrim klist));
