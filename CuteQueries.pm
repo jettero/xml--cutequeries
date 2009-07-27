@@ -15,7 +15,7 @@ use constant KLIST  => 2;
 
 use Exporter;
 our @EXPORT_OK = qw(CQ);
-sub CQ() { our $CQ ||= __PACKAGE__->new; }
+sub CQ() { our $CQ ||= __PACKAGE__->new; } ## no critic, sometimes prototypes are ok...
 
 our %VALID_OPTS = (map {$_=>1} qw(nostrict nostrict_match nostrict_single nofilter_nontags notrim klist));
 
