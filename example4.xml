@@ -14,7 +14,9 @@
     $CQ->parsefile("example4.xml")->cute_query(m=>{ten=>["../ten"=>''], fifteen=>["../fifteen"=>'']})
 
     Possibly Query Forms:
-    1) $CQ->parsefile("example4.xml")->cute_query(m=>[{ten=>'', fifteen=>''}])
+    <strike>1) $CQ->parsefile("example4.xml")->cute_query(m=>[{ten=>'', fifteen=>''}])</strike>
+
+    I think this is clearest
     2) $CQ->parsefile("example4.xml")->cute_query(m=>{'[]ten'=>'', '[]fifteen'=>})
 -->
 
