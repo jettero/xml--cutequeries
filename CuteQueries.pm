@@ -255,7 +255,14 @@ sub _execute_query {
 
         if( $context == KLIST ) {
             if( $kar ) {
-                die "TODO[AR]";
+                my %h;
+
+                for my $c (@c) {
+                    push @{$h{$c->gi}},
+                        [ map {$this->_execute_query($c, $opts, @$_, LIST)} @p ]
+                }
+
+                return %h;
 
             } elsif( $opts->{nostrict_single} ) {
                 return map {
