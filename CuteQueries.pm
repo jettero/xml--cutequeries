@@ -86,6 +86,12 @@ sub _execute_query {
         }
     }
 
+    my $kar = 0; # klist keys are expected more than once
+    if( $query =~ s/^\[\]// ) {
+        # NOTE: I don't think this is ever valid XPath
+        $kar = 1;
+    }
+
     my ($re, $nre) = (0,0);
 
     if( my ($type, $code) = $query =~ m/^<([!Nn]?[Rr][Ee])>(.+?)(?:<\/\1>)?\z/ ) {
