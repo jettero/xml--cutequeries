@@ -9,6 +9,7 @@ README
 example.xml
 example2.xml
 example3.xml
+example4.xml
 lib/XML/CuteQueries.pod
 lib/XML/CuteQueries/Error.pod
 t/01_load.t
@@ -26,6 +27,9 @@ t/12_test_example2.t
 t/15_longer_xml.t
 t/15_trivial_xml.t
 t/17_trivial_twig.t
+t/20_arr_kar.t
+t/20_hash_kar.t
+t/20_scalar_kar.t
 t/critic.t
 t/pod.t
 t/pod_coverage.t
