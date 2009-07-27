@@ -210,7 +210,14 @@ sub _execute_query {
     } elsif( $rt eq "HASH" ) {
         if( $context == KLIST ) {
             if( $kar ) {
-                die "TODO[HA]";
+                my %h;
+
+                for my $c (@c) {
+                    push @{$h{$c->gi}},
+                        {map { $this->_execute_query($c, $opts, $_ => $res_type->{$_}, KLIST) } keys %$res_type}
+                }
+
+                return %h;
 
             } elsif( $opts->{nostrict_single} ) {
                 return map {
