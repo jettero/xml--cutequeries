@@ -1,4 +1,10 @@
 
+0.6600: Mon Jul 27 2009
+   - added klist single-value failure
+   - split up nostrict into nostrict_single and nostrict_match
+   - added a CQ export "constant" for convenience, not documented
+     until I see if I like it.
+
 0.6502: Sun Jul 26 2009
    - Another patch from Hans. C<< >> won't escape an L<> inside?
      Huh.
