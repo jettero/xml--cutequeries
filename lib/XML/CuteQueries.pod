@@ -151,7 +151,7 @@ But but the hash query isn't quite doing it right:
     $h = $CQ->cute_query({nostrict=>1}, m=>{'*'=>''});
 
 If you prefix you're query with C<[]>, you'll get arrayrefs for each key in the
-klist (key list).
+result.
 
     $h = $CQ->cute_query( m => {'[]*'=>''} );
     $h = $CQ->cute_query( m => {'[]x'=>'', '[]y'=>''} );
