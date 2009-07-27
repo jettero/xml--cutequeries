@@ -1,4 +1,8 @@
 
+0.6502: Sun Jul 26 2009
+   - Another patch from Hans. C<< >> won't escape an L<> inside?
+     Huh.
+
 0.6501: Sat Jul 25 2009
    - added scalar query sub-types: xml() twig() recurse_text()
    - removed the recurse_text=>1 option -- affects entire query,
