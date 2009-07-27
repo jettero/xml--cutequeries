@@ -12,7 +12,7 @@ use constant KLIST  => 2;
 
 our $VERSION = '0.6502';
 
-our %VALID_OPTS = (map {$_=>1} qw(nostrict nofilter_nontags notrim klist));
+our %VALID_OPTS = (map {$_=>1} qw(nostrict nostrict_match nostrict_single nofilter_nontags notrim klist));
 
 # _data_error {{{
 sub _data_error {
@@ -123,7 +123,7 @@ sub _execute_query {
         @c = grep {$_->gi !~ m/^#/} @c unless $opts->{nofilter_nontags};
     }
 
-    $this->_data_error($rt, "match failed for \"$query\"") unless @c or $opts->{nostrict};
+    $this->_data_error($rt, "match failed for \"$query\"") unless @c or $opts->{nostrict_match};
     return unless @c;
 
     my $_trimlist;
@@ -155,10 +155,27 @@ sub _execute_query {
         }
 
         if( $context == KLIST ) {
-            return map { $_->gi => $_ } @c if $mt eq "t";
-            return $_trimhash->( map { $_->gi => $_->xml_string } @c ) if $mt eq "x";
-            return $_trimhash->( map { $_->gi => $_->text       } @c ) if $mt eq "r";
-            return $_trimhash->( map { $_->gi => $_->text_only  } @c );
+            if( $opts->{nostrict_single} ) {
+                return map { $_->gi => $_ } @c if $mt eq "t";
+                return $_trimhash->( map { $_->gi => $_->xml_string } @c ) if $mt eq "x";
+                return $_trimhash->( map { $_->gi => $_->text       } @c ) if $mt eq "r";
+                return $_trimhash->( map { $_->gi => $_->text_only  } @c );
+
+            } else {
+                my %check;
+                my $mygi = sub {
+                    my $g = $_[0]->gi;
+
+                    $this->_data_error($rt, "expected exactly one match-per-tagname for \"$query\", got more")
+                        if $check{$g}++;
+
+                    $g;
+                };
+                return map { $_->$mygi => $_ } @c if $mt eq "t";
+                return $_trimhash->( map { $_->$mygi => $_->xml_string } @c ) if $mt eq "x";
+                return $_trimhash->( map { $_->$mygi => $_->text       } @c ) if $mt eq "r";
+                return $_trimhash->( map { $_->$mygi => $_->text_only  } @c );
+            }
         }
 
         return @c if $mt eq "t";
@@ -204,6 +221,8 @@ sub cute_query {
     my $opts = {};
        $opts = shift if ref $_[0] eq "HASH";
 
+    $opts->{nostrict_match} = $opts->{nostrict_single} = $opts->{nostrict} if exists $opts->{nostrict};
+
     for(keys %$opts) {
         $this->_query_error("no such query option \"$_\"") unless $VALID_OPTS{$_};
     }
@@ -222,9 +241,17 @@ sub cute_query {
 
     unless( wantarray ) {
 
-        unless( $opts->{nostrict} or @result==1 ) {
-            my $rt = (defined $res_type and reftype $res_type) || '';
-            $this->_data_error($rt, "expected exactly one match for \"$query\", got " . @result)
+        if( @result>1 ) {
+            unless( $opts->{nostrict_single} ) {
+                my $rt = (defined $res_type and reftype $res_type) || '';
+                $this->_data_error($rt, "expected exactly one match for \"$query\", got " . @result)
+            }
+
+        } elsif( @result<1 ) {
+            unless( $opts->{nostrict_match} ) {
+                my $rt = (defined $res_type and reftype $res_type) || '';
+                $this->_data_error($rt, "expected exactly one match for \"$query\", got " . @result)
+            }
         }
 
         return $result[0]; # we never want the size of the array, preferring the first match

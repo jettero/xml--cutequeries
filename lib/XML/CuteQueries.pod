@@ -93,7 +93,7 @@ except for the fact that C<Regexp> references cannot be meaningfully used as
 hash keys!
 
     # Example of why this doesn't work:
-    my $hashref = { qr(key) => 1 }; 
+    my $hashref = { qr(key) => 1 };
 
     # It turns out like this:
     my $actual  = { '(?-xism:key)' => 1 };
@@ -450,12 +450,33 @@ CQ crashes in various ways unless your patterns match precisely as you requested
 them.  It may sometimes be desirable to continue matching and return appropriate
 nothings instead.  Use this option to achieve that behavior.
 
-    my $CQ = XML::CuteQueries
-     ->new->parse("<r><x><y>7</y></x></r>");
+There are actually two flavors of C<nostrict>.  You can turn them both on with
+C<nostrict>, or turn them on individually.
 
-    $CQ->cute_query("x/y", ''); # 7
-    $CQ->cute_query("x/z", ''); # croaks()
-    $CQ->cute_query({nostrict=>1}, "x/z", ''); # undef
+    my $CQ = XML::CuteQueries
+     ->new->parse("<r><x><y>7</y><a>7</a><a>8</a></x></r>");
+
+    my $scalar = $CQ->cute_query("x/y" => ''); # 7
+    my $scalar = $CQ->cute_query("x/z" => ''); # croaks(), match failed
+    my $scalar = $CQ->cute_query("x/a" => ''); # croaks(), too many matches
+
+The first flavor is C<nostrict_match>:
+
+    $CQ->cute_query({nostrict=>1}, "x/z" => ''); # undef
+    $CQ->cute_query({nostrict_match=>1}, "x/z" => ''); # undef
+
+The second flavor is C<nostrict_single>:
+
+    my $scalar = $CQ->cute_query({nostrict=>1}, "x/a" => ''); # 7
+    my $scalar = $CQ->cute_query({nostrict_single=>1}, "x/a" => ''); # 7
+    my @ar     = $CQ->cute_query("x/a" => ''); # (7,8)
+
+B<NOTE>: The loose single match behavior is different than Perl!
+
+    my $single = qw(one two); # $single = "two";
+    my $single = @array = qw(one two); # $single = 2;
+
+    my $single = $CQ->blah() is returning the first match, not the last!
 
 =item B<klist>
 
