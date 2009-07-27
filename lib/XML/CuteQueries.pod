@@ -552,9 +552,9 @@ worrying about the problem listed in L</SIMPLE AMBIGUITIES>.
 
 =over 4
 
-=item Hans Dieter Pearcey C<< <?????@weftsoar.net> >>
+=item Hans Dieter Pearcey C<< <hdp@weftsoar.net> >>
 
-I did not know there wasn't a C<< L<text|scheme:> >>.  Why doesn't Test::Pod
+I did not know there wasn't a C<< LE<lt>text|scheme:E<gt> >>.  Why doesn't Test::Pod
 notice this?  (He also fixed an ugly doc bug, implying he actually read the
 docs.  Neat.)
 
