@@ -97,8 +97,6 @@ sub _execute_query {
         $kar = 1;
 
         $this->_query_error("[] queries (\"[]$query\") do not make sense outside of klist contexts") unless $context == KLIST;
-        $this->_query_error("[]@ queries (\"[]$query\")are unsupported because <x a='1' a='1'/> isn't valid anyway")
-            if $query =~ m/^[@]/;
     }
 
     my ($re, $nre) = (0,0);
@@ -154,6 +152,20 @@ sub _execute_query {
         }
 
         if( $attr_query ) {
+            if( $kar ) {
+                # NOTE: it's safe to assume we're in KLIST
+
+                my %h;
+
+                # if( $attr_query eq "*" ) {
+                #     return $_trimhash->( map { %{$_->{att}} } @c );
+                # }
+
+                # return $_trimhash->( map { $attr_query => $_->{att}{$attr_query} } @c );
+
+                return %h;
+            }
+
             if( $attr_query eq "*" ) {
                 if( $context == KLIST ) {
                     return $_trimhash->( map { %{$_->{att}} } @c );
