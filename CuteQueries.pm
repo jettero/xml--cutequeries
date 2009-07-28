@@ -178,6 +178,8 @@ sub _execute_query {
                 elsif( $mt eq "r" ) { push @{$h{$_->gi}}, $_->text       for @c }
                 else                { push @{$h{$_->gi}}, $_->text_only  for @c }
 
+                $_->_trimlist( values %h ) unless $mt eq "t";
+
                 return %h;
 
             } elsif( $opts->{nostrict_single} ) {
