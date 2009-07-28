@@ -162,7 +162,7 @@ sub _execute_query {
                 # NOTE: it's safe to assume we're in KLIST
 
                 my @attr = $attr_query eq "*"
-                         ? (map { keys %{$_->{att}} } @c)
+                         ? do { my %ua; grep { !$ua{$_}++ } map { keys %{$_->{att}} } @c }
                          : $attr_query;
 
                 for my $attr (@attr) {
