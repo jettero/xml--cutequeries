@@ -28,6 +28,7 @@ t/15_longer_xml.t
 t/15_trivial_xml.t
 t/17_trivial_twig.t
 t/20_arr_kar.t
+t/20_attr_kar.t
 t/20_hash_kar.t
 t/20_scalar_kar.t
 t/critic.t
