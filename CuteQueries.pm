@@ -202,8 +202,8 @@ sub _execute_query {
                 else                { push @{$h{$_->gi}}, $_->text_only  for @c }
 
                 unless( $mt eq "t" ) {
-                    for $a (values %h) {
-                        $_trimlist->( @$a );
+                    for my $v (values %h) {
+                        $_trimlist->( @$v );
                     }
                 }
 
