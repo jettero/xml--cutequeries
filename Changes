@@ -1,4 +1,8 @@
 
+0.6601: Tue Jul 28 2009
+   - fixed various bugs with KAR lists for attribute queries.
+   - fixed bugs re: trimming values in KAR results
+
 0.6600: Mon Jul 27 2009
    - added klist single-value failure
    - split up nostrict into nostrict_single and nostrict_match
