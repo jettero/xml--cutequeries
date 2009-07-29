@@ -1,4 +1,8 @@
 
+0.6602: Wed Jul 29 2009
+   - pulled in some DRY stuff from Hans Dieter Pearcey (aka hdp)
+   - added more KAR examples to the pods, tested some of that too
+
 0.6601: Tue Jul 28 2009
    - fixed various bugs with KAR lists for attribute queries.
    - fixed bugs re: trimming values in KAR results
