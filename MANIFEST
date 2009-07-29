@@ -6,6 +6,7 @@ CuteQueries/Error.pm
 MANIFEST
 Makefile.PL
 README
+contrib/test_pod_assertions.pl
 example.xml
 example2.xml
 example3.xml
