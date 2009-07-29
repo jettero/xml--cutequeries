@@ -610,6 +610,15 @@ I did not know there wasn't a C<< LE<lt>text|scheme:E<gt> >>.  Why doesn't Test:
 notice this?  (He also fixed an ugly doc bug, implying he actually read the
 docs.  Neat.)
 
+Hans has also begun some refactoring in the (currently) heinously built query
+code.
+
+=item Github L<http://github.com>
+
+Github makes this collaboration a joy.  I didn't have to add Hans to the repo or
+anything, he just started working on it, I could see what he did, and pulled it
+in.
+
 =back
 
 =head1 AUTHOR
