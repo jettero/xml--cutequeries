@@ -192,50 +192,38 @@ sub _execute_query {
             return $_trimlist->( map { $_->{att}{$attr_query} } @c );
         }
 
-        if( $context == KLIST ) {
-            if( $kar ) {
-                my %h;
+        my $get_value = {
+            t => sub { $_[0] },
+            x => 'xml_string',
+            r => 'text',
+            0 => 'text_only'
+        }->{$mt};
 
-                   if( $mt eq "t" ) { push @{$h{$_->gi}}, $_             for @c }
-                elsif( $mt eq "x" ) { push @{$h{$_->gi}}, $_->xml_string for @c }
-                elsif( $mt eq "r" ) { push @{$h{$_->gi}}, $_->text       for @c }
-                else                { push @{$h{$_->gi}}, $_->text_only  for @c }
+        if ($mt eq 't') {
+            $_trimlist = $_trimhash = sub { @_ };
+        }
 
-                unless( $mt eq "t" ) {
-                    for my $v (values %h) {
-                        $_trimlist->( @$v );
-                    }
-                }
+        return $_trimlist->( map { $_->$get_value } @c ) unless $context == KLIST;
 
-                return %h;
+        my %h;
 
-            } elsif( $opts->{nostrict_single} ) {
-                return map { $_->gi => $_ } @c if $mt eq "t";
-                return $_trimhash->( map { $_->gi => $_->xml_string } @c ) if $mt eq "x";
-                return $_trimhash->( map { $_->gi => $_->text       } @c ) if $mt eq "r";
-                return $_trimhash->( map { $_->gi => $_->text_only  } @c );
-
-            } else {
-                my %check;
-                my $mygi = sub {
-                    my $g = $_[0]->gi;
-
-                    $this->_data_error($rt, "expected exactly one match-per-tagname for \"$query\", got more")
-                        if $check{$g}++;
-
-                    $g;
-                };
-                return map { $_->$mygi => $_ } @c if $mt eq "t";
-                return $_trimhash->( map { $_->$mygi => $_->xml_string } @c ) if $mt eq "x";
-                return $_trimhash->( map { $_->$mygi => $_->text       } @c ) if $mt eq "r";
-                return $_trimhash->( map { $_->$mygi => $_->text_only  } @c );
+        for (@c) {
+            my $arr = $h{$_->gi} ||= [];
+            # discard all but the last result
+            @$arr = () if $opts->{nostrict_single};
+            push @$arr, $_->$get_value;
+            unless ($kar || @$arr == 1) {
+                $this->_data_error($rt, "expected exactly one match-per-tagname for \"$query\", got more")
             }
         }
 
-        return @c if $mt eq "t";
-        return $_trimlist->( map { $_->xml_string } @c ) if $mt eq "x";
-        return $_trimlist->( map { $_->text       } @c ) if $mt eq "r";
-        return $_trimlist->( map { $_->text_only  } @c );
+        if ($kar) {
+            $_trimlist->( @$_ ) for values %h;
+            return %h;
+        } else {
+            $_ = $_->[-1] for values %h;
+            return $_trimhash->(%h);
+        }
 
     } elsif( $rt eq "HASH" ) {
         if( $context == KLIST ) {
