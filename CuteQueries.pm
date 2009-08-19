@@ -4,8 +4,9 @@ package XML::CuteQueries;
 use strict;
 use warnings;
 
-our $VERSION = '0.6602';
+our $VERSION = '0.6610';
 
+use Carp;
 use Scalar::Util qw(reftype blessed);
 use XML::CuteQueries::Error;
 use base 'XML::Twig';
@@ -14,8 +15,31 @@ use constant LIST   => 1;
 use constant KLIST  => 2;
 
 use Exporter;
-our @EXPORT_OK = qw(CQ);
-sub CQ() { our $CQ ||= __PACKAGE__->new; } ## no critic, sometimes prototypes are ok...
+our @EXPORT_OK = qw(CQ slurp);
+
+sub CQ {
+    our $CQ ||= __PACKAGE__->new;
+
+    if( my %o = @_ ) {
+        my $arg;
+        if( $arg = $o{file} ) {
+            eval { $CQ->parsefile($arg); 1 } or do {
+                $CQ = __PACKAGE__->new; # build new CQ so we can do the next twig
+                my $e = $@; $e =~ s/\s+(eval \d+)//;
+                croak $@;
+            }
+
+        } elsif( $arg = $o{xml} ) {
+            eval { $CQ->parse($arg); 1 } or do {
+                $CQ = __PACKAGE__->new; # build new CQ so we can do the next twig
+                my $e = $@; $e =~ s/\s+(eval \d+)//;
+                croak $@;
+            }
+        }
+    }
+
+    return $CQ
+}
 
 our %VALID_OPTS = (map {$_=>1} qw(nostrict nostrict_match nostrict_single nofilter_nontags notrim klist));
 

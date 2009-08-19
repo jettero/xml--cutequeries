@@ -1,4 +1,7 @@
 
+0.6610: Wed Aug 19 2009
+   - I made CQ() do a little more stuff
+
 0.6602: Wed Jul 29 2009
    - pulled in some DRY stuff from Hans Dieter Pearcey (aka hdp)
    - added more KAR examples to the pods, tested some of that too
