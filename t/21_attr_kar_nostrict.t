@@ -19,7 +19,8 @@ my $CQ = XML::CuteQueries->new->parse(q{ <r>
 
 </r> });
 
-plan tests => 1;
+plan tests => 2;
 
-ok( Dumper({ $CQ->hash_query('[]*'=>'') }), Dumper({meta=>[qw(blarg1 blarg2 blarg3 test1 test2 test3)]}) );
+ok( Dumper({ $CQ->hash_query('[]*'=>'') }),                     Dumper({meta=>[qw(blarg1 blarg2 blarg3 test1 test2 test3)]}) );
+ok( Dumper({ $CQ->hash_query({nostrict_match=>1},'[]*'=>'') }), Dumper({meta=>[qw(blarg1 blarg2 blarg3 test1 test2 test3)]}) );
 
