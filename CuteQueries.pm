@@ -21,7 +21,7 @@ our @EXPORT_OK = qw(CQ slurp);
 sub CQ {
     our $CQ ||= __PACKAGE__->new;
 
-    no warnings 'misc'; ## nocritic: yeah, they might do it wrong and pass an odd number, deal with it
+    no warnings 'misc'; ## no critic: yeah, they might do it wrong and pass an odd number, deal with it
     if( my %o = @_ ) {
         my $arg;
         if( $arg = $o{file} ) {
