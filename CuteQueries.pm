@@ -17,6 +17,7 @@ use constant KLIST  => 2;
 use Exporter;
 our @EXPORT_OK = qw(CQ slurp);
 
+# CQ {{{
 sub CQ {
     our $CQ ||= __PACKAGE__->new;
 
@@ -41,6 +42,7 @@ sub CQ {
 
     return $CQ
 }
+# }}}
 
 our %VALID_OPTS = (map {$_=>1} qw(nostrict nostrict_match nostrict_single nofilter_nontags notrim klist));
 
