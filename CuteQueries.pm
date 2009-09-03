@@ -4,7 +4,7 @@ package XML::CuteQueries;
 use strict;
 use warnings;
 
-our $VERSION = '0.6700';
+our $VERSION = '0.6611';
 
 use Carp;
 use Scalar::Util qw(reftype blessed);
