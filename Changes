@@ -1,4 +1,7 @@
 
+0.6700: Thu Sep 03 2009
+   - hunting a bug with strict vs KAR queries
+
 0.6610: Wed Aug 19 2009
    - I made CQ() do a little more stuff
 
