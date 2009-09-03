@@ -33,6 +33,7 @@ t/20_arr_kar.t
 t/20_attr_kar.t
 t/20_hash_kar.t
 t/20_scalar_kar.t
+t/21_attr_kar_nostrict.t
 t/critic.t
 t/pod.t
 t/pod_coverage.t
