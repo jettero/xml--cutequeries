@@ -237,7 +237,7 @@ sub _execute_query {
         for (@c) {
             my $arr = $h{$_->gi} ||= [];
             # discard all but the last result
-            @$arr = () if $opts->{nostrict_single};
+            @$arr = () if $opts->{nostrict_single} and not $kar;
             push @$arr, $_->$get_value;
             unless ($kar || @$arr == 1) {
                 $this->_data_error($rt, "expected exactly one match-per-tagname for \"$query\", got more")
