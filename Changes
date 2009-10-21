@@ -1,4 +1,7 @@
 
+0.6612: Wed Oct 21 2009
+   - Just added Data::Dumper to the Makefile.PL reqs
+
 0.6611: Thu Sep 03 2009
    - fixed a bug with nostrict_single vs KAR queries
 
