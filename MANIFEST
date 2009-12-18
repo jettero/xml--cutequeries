@@ -8,6 +8,7 @@ Makefile.PL
 README
 bad.xml
 contrib/test_pod_assertions.pl
+ddo.xml
 example.xml
 example2.xml
 example3.xml
@@ -34,6 +35,7 @@ t/20_attr_kar.t
 t/20_hash_kar.t
 t/20_scalar_kar.t
 t/21_attr_kar_nostrict.t
+t/22_ddo.t
 t/critic.t
 t/pod.t
 t/pod_coverage.t
