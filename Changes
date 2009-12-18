@@ -1,4 +1,7 @@
 
+0.6613: Fri Dec 18 2009
+   - tiny bug regarding attr names vs namespaces
+
 0.6612: Wed Oct 21 2009
    - Just added Data::Dumper to the Makefile.PL reqs
 
