@@ -3,6 +3,7 @@
 <?xml-stylesheet href="http://www.ddo.com/plugins/system/jceutilities/css/jceutilities-213.css" type="text/css"?>
 <?xml-stylesheet href="http://www.ddo.com/plugins/system/jceutilities/themes/standard/css/style.css" type="text/css"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:base="http://www.ddo.com/news" xml:lang="en-gb">
+    <contrived:test>test</contrived:test>
 	<title type="text">News</title>
 	<subtitle type="text">Play DDO Unlimted For FREE! The only MMO with kick-ass combat, killer dungeons, and iconic D&amp;D monsters!</subtitle>
 	<link rel="alternate" type="text/html" href="/news"/>
