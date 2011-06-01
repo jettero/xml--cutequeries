@@ -13,6 +13,7 @@ WriteMakefile(
         'XML::Twig'       => 0, # for CQ
         'Class::Accessor' => 0, # for CQ:E
         'Data::Dumper'    => 0, # required for testing, got some FAIL reports because this wasn't here.
+        parent => 0,
     },
 
     ($ExtUtils::MakeMaker::VERSION ge '6.48'? 

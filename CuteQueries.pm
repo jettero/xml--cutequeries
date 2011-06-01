@@ -14,7 +14,7 @@ use base 'XML::Twig';
 use constant LIST   => 1;
 use constant KLIST  => 2;
 
-use Exporter;
+use parent 'Exporter';
 our @EXPORT_OK = qw(CQ slurp);
 
 # CQ {{{
