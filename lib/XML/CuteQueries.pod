@@ -672,9 +672,16 @@ plain want to say hi ... shoot me an email.  I love to hear from people.
 If there are bugs, or wishlist items, please choose
 L<http://rt.cpan.org/Public/Dist/Display.html?Name=XML-CuteQueries>
 
-=head1 COPYRIGHT
+=head1 LICENSE
 
-Copyright (c) 2009 Paul Miller
+Copyright (C) 2010, Paul Miller,
+
+This module is free software.  You can redistribute it and/or
+modify it under the terms of the Artistic License 2.0.
+
+This program is distributed in the hope that it will be useful,
+but without any warranty; without even the implied warranty of
+merchantability or fitness for a particular purpose.
 
 =head1 SEE ALSO
 
